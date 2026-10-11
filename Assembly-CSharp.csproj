@@ -52,19 +52,20 @@
     <Analyzer Include="D:\Unity\My project\Library\PackageCache\com.unity.dt.app-ui@8ac7e730dd5d\Runtime\MVVM\SourceGenerators\netstandard2.0\MVVMSourceGenerators.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\_Scenes\Script\Player\PlayerStatus.cs" />
-    <Compile Include="Assets\_Scenes\Script\ScriptableObject\Wave data.cs" />
-    <Compile Include="Assets\_Scenes\Script\ScriptableObject\Enemy Data.cs" />
+    <Compile Include="Assets\_Scenes\Script\ScriptableObject\EnemyDt\Enemy Data.cs" />
+    <Compile Include="Assets\_Scenes\Script\ScriptableObject\Waves\Wave data.cs" />
     <Compile Include="Assets\_Scenes\Script\UIController\UIController.cs" />
+    <Compile Include="Assets\_Scenes\Script\Player\GameManager.cs" />
     <Compile Include="Assets\_Scenes\Script\Enemy\EnemySpawn.cs" />
+    <Compile Include="Assets\_Scenes\Script\TowerDt\TowerTarget.cs" />
     <Compile Include="Assets\_Scenes\Script\Pool\ObjectPooler.cs" />
     <Compile Include="Assets\_Scenes\Script\Enemy\EnemyMove.cs" />
     <Compile Include="Assets\_Scenes\Script\Enemy\EnemyCtrl.cs" />
     <Compile Include="Assets\_Scenes\Script\EnemyType.cs" />
+    <Compile Include="Assets\_Scenes\Script\ScriptableObject\TowerDt\TowerData.cs" />
     <Compile Include="Assets\_Scenes\Script\Path\Path.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include=".gitignore" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile-2-Pass.shader" />

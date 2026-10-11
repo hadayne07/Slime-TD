@@ -1,7 +1,7 @@
     using System;
     using UnityEngine;
 
-    public class PlayerStatus : MonoBehaviour
+    public class GameManager : MonoBehaviour
     {
         [SerializeField] private int hp = 100;
         public int Hp { get => hp; }

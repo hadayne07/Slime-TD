@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PathWave
   - EnemySpawn
+  - Enemy
   layers:
   - Default
   - TransparentFX

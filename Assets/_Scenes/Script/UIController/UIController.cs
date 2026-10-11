@@ -8,14 +8,14 @@ public class UIController : MonoBehaviour
     private void OnEnable()
     {
         EnemySpawn.OnWaveChanged += UpdateWaveText;
-        PlayerStatus.CurrentHp += UpdateHp;
+        GameManager.CurrentHp += UpdateHp;
     }
 
     private void OnDisable()
     {
 
         EnemySpawn.OnWaveChanged -= UpdateWaveText;
-        PlayerStatus.CurrentHp -= UpdateHp;
+        GameManager.CurrentHp -= UpdateHp;
     }
 
     
