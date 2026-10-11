@@ -1,0 +1,50 @@
+TOWER DEFENSE — PROTOTYPE V2
+
+CÁCH MỞ
+1. Sao lưu project gốc.
+2. Giải nén ZIP này.
+3. Thay Assets/_Scenes của project bằng Assets/_Scenes trong ZIP.
+4. Chép thêm Assets/Resources/TowerDefenseArt và các file Assets/Editor trong ZIP vào project.
+   Giữ nguyên thư mục Packages, ProjectSettings và TextMesh Pro của project gốc.
+5. Mở Assets/_Scenes/TowerDefensePrototype.unity, bấm Play.
+   Scene này tạo bản đồ, sprite và HUD khi chạy. Trong Edit Mode chỉ thấy camera và GameManager.
+   SampleScene cũ cũng chạy cùng prototype; bản đồ cũ của bạn vẫn được giữ trong scene đó.
+
+CÁCH CHƠI
+- Có 150 vàng và một tháp miễn phí.
+- Bấm ô [+ 50] để xây tháp.
+- Bấm tháp để nâng cấp: 40 vàng lên cấp 2, 80 vàng lên cấp 3.
+- Enemy bị diệt cho vàng; hoàn thành đợt 1–4 thưởng thêm 25 vàng.
+- Nút ĐỢT TIẾP bắt đầu đợt sớm. Nếu không bấm, đợt tự bắt đầu sau thời gian chuẩn bị.
+- Có tạm dừng, tốc độ x1/x2.
+- Thành hết 100 máu: thua. Diệt hết enemy của 5 đợt: thắng. Bấm CHƠI LẠI để chơi lại.
+
+THAY ĐỔI CHÍNH
+- Dùng sprite mới từ Kenney Tiny Battle (CC0): tháp xanh, lính đỏ, căn cứ xanh.
+- Tạo một bản đồ prototype pixel có đường đi, 8 ô xây và thanh máu enemy.
+- Retire toàn bộ Canvas cũ; HUD mới có nền gọn ở trên/dưới, không có bảng thua khi vừa Play.
+- ResultOverlay chỉ bật khi thắng/thua; UI được tạo một lần mỗi lần tải scene.
+- Tower có BoxCollider2D 0.875 × 0.75, offset (0, -0.0625), trigger.
+- Thân tháp không xoay; bán kính tấn công độc lập, không dùng collider khổng lồ.
+- Projectile gây sát thương trực tiếp khi chạm mục tiêu, tránh mất đạn do cấu hình tag/layer.
+- Không còn Player điều khiển hoặc bắn thủ công.
+- Pixel texture dùng Point, không mipmap, không nén, giữ nguyên kích thước atlas.
+- Chữ trong game dùng tiếng Việt không dấu để tương thích font TMP sẵn có.
+
+CHỈNH THÔNG SỐ
+- Chọn GameManager trong scene: tiền khởi đầu, máu thành, số đợt và giá xây.
+- EnemySpawn.cs: số enemy, khoảng cách xuất hiện, máu, tốc độ, thưởng vàng.
+- TowerShoot.cs / TowerRange.cs / TowerUpgrade.cs: sát thương, tốc độ bắn, phạm vi, nâng cấp.
+- DefenseSetup.cs: đường đi, vị trí ô xây, sprite, giao diện.
+
+KIỂM TRA ĐÃ THỰC HIỆN
+- Biên dịch toàn bộ code gameplay và editor bằng thư viện Unity 6000.3.23f1, uGUI, TextMeshPro: thành công.
+- Kiểm tra atlas có đủ tile, tham chiếu scene và cấu hình collider/UI.
+- Có bộ kiểm tra Play Mode trong Assets/Editor/PrototypePlayTests.cs.
+- CHƯA chạy thành công Play Mode hoặc kiểm tra hình ảnh thực tế: Unity Licensing Client từ chối kết nối trong môi trường thực thi.
+  Vì vậy bộ kiểm tra Play Mode được cung cấp nhưng chưa có kết quả PASS.
+- Không có Windows build đã xác minh trong gói này.
+
+NGUỒN ASSET
+https://kenney.nl/assets/tiny-battle
+Giấy phép đi kèm: Assets/Resources/TowerDefenseArt/License.txt
