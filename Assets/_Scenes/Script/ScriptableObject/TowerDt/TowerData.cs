@@ -1,14 +1,16 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "TowerData", menuName = "Scriptable Objects/TowerData")]
 public class TowerData : ScriptableObject
 {
-    [SerializeField] private float speed;
-    public float Speed { get => speed; }
+    [SerializeField] private float speedBullet;
+    public float Speed { get => speedBullet; }
     [SerializeField] private float damage;
     public float Damage { get => damage; }
     [SerializeField] private float range;
     public float Range { get => range; }
-    [SerializeField] private float timeBulletActive;
-    public float TimeBulletActive { get => timeBulletActive; }
+    [SerializeField] private float timeShoot;
+    public float TimeShoot { get => timeShoot; }
+
+
 }

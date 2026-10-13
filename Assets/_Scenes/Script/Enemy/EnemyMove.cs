@@ -24,12 +24,15 @@ public class EnemyMove : MonoBehaviour
     public void Move()
     {
         transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, data.Speed * Time.deltaTime);
+
+        // distance = (vi tri hien tai - waypoint ) do dai...
         distance = (transform.position - targetWaypoint).magnitude;
 
       
         
         if ( distance <= 0.1f)
             {
+            // khi chua den diem cuoi
             if (currentPosition < currentpath.Waypoints.Count-1)
             {
                 currentPosition++;

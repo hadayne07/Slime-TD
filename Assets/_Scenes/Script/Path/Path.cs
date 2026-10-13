@@ -22,6 +22,7 @@ public class Path : MonoBehaviour
                 {
                     Gizmos.color = Color.blue;
                     Gizmos.DrawLine(waypoints[i].position, waypoints[i + 1].position);
+                   
                 }    
             }
         }
@@ -29,3 +30,6 @@ public class Path : MonoBehaviour
     }
 
 }
+
+
+
