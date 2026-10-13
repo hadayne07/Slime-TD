@@ -2,17 +2,22 @@
 
 public class TowerCtrl : MonoBehaviour
 {
-    private TowerShoot towerShoot;
+
     private TowerTarget towerTarget;
+    private TowerShoot towershoot;
+   [SerializeField] private float timeDelay = 0f;
     private void Awake()
     {
-        towerShoot = GetComponent<TowerShoot>();
-        towerTarget = GetComponent<TowerTarget>();
+        towershoot = GetComponent<TowerShoot>();
+         towerTarget = GetComponent<TowerTarget>();
     }
 
     private void Update()
     {
-        if (towerTarget.enemiesInRange.Count > 0)
-            towerShoot.Shoot();
+        timeDelay += Time.deltaTime;
+        if (timeDelay < towershoot.Data.TimeShoot) return;
+        timeDelay = 0f;
+        towershoot.Shoot();
+
     }
 }

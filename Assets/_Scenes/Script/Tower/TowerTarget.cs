@@ -1,10 +1,12 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class TowerTarget : MonoBehaviour
 {
     [SerializeField] private TowerData data;
+    
     protected CircleCollider2D _collider;
     [SerializeField] public List<EnemyMove> enemiesInRange;
     private void OnDrawGizmos()
@@ -24,6 +26,7 @@ public class TowerTarget : MonoBehaviour
         {
             EnemyMove enemy = collision.GetComponent<EnemyMove>();
             enemiesInRange.Add(enemy);
+      
         }
     }
 

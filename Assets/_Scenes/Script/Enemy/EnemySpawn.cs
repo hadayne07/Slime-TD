@@ -40,11 +40,13 @@ public class EnemySpawn : MonoBehaviour
     private void OnEnable()
     {
         EnemyMove.OnEnemyReachEnd += HandleEnemyReachEnd;
+        EnemyStatus.enemyDie += HandleEnemyDie;
     }
 
     private void OnDisable()
     {
         EnemyMove.OnEnemyReachEnd -= HandleEnemyReachEnd;
+        EnemyStatus.enemyDie -= HandleEnemyDie;
     }
 
 
@@ -122,5 +124,8 @@ public class EnemySpawn : MonoBehaviour
         enemiesRemoved++;
     }
 
-
+    protected void HandleEnemyDie ( EnemyStatus enemy)
+    {
+        enemiesRemoved++;
+    }
 }
