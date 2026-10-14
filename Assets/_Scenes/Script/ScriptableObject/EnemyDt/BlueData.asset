@@ -15,3 +15,4 @@ MonoBehaviour:
   speed: 5
   hp: 10
   damage: 5
+  goldFall: 4

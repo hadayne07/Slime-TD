@@ -15,4 +15,4 @@ MonoBehaviour:
   speedBullet: 7
   damage: 2
   range: 3.55
-  timeShoot: 1
+  timeShoot: 0.4

@@ -5,10 +5,12 @@ public class UIController : MonoBehaviour
 {
     [SerializeField] private TMP_Text waveText;
     [SerializeField] private TMP_Text hpText;
+    [SerializeField] private TMP_Text goldText;
     private void OnEnable()
     {
         EnemySpawn.OnWaveChanged += UpdateWaveText;
         GameManager.CurrentHp += UpdateHp;
+        GameManager.CurrentGold += UpdateGold;
     }
 
     private void OnDisable()
@@ -16,6 +18,7 @@ public class UIController : MonoBehaviour
 
         EnemySpawn.OnWaveChanged -= UpdateWaveText;
         GameManager.CurrentHp -= UpdateHp;
+        GameManager.CurrentGold -= UpdateGold;
     }
 
     
@@ -28,7 +31,11 @@ public class UIController : MonoBehaviour
 
     private void UpdateHp( int hp)
     {
-        hpText.text = $"HP {hp}";
+        hpText.text = $"HP: {hp}";
+    }
+    private void UpdateGold(int gold)
+    {
+        goldText.text = $"Gold: {gold}";
     }
 }
 

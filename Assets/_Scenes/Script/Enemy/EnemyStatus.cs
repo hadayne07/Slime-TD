@@ -1,10 +1,12 @@
 using System;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class EnemyStatus : MonoBehaviour
 {
     [SerializeField]private EnemyData data;
     public static Action<EnemyStatus> enemyDie;
+    public static Action<EnemyData> goldplus;
     [SerializeField] private float hp;
     [SerializeField] private Transform healthbar;
     private Vector3 healthBarOriginalScale;
@@ -25,6 +27,7 @@ public class EnemyStatus : MonoBehaviour
     {
          if (hp <= 0)
         {
+            goldplus?.Invoke(data);
             enemyDie?.Invoke(this);
             gameObject.SetActive(false);
         }
