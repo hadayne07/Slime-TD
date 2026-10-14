@@ -11,6 +11,8 @@ public class TowerData : ScriptableObject
     public float Range { get => range; }
     [SerializeField] private float timeShoot;
     public float TimeShoot { get => timeShoot; }
+    [SerializeField] private float bulletSize;
+    public float BulletSize => bulletSize;
 
 
 }

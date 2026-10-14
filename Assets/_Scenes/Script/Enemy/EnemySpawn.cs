@@ -17,6 +17,8 @@ public class EnemySpawn : MonoBehaviour
     [SerializeField] private int spawncouter = 0;
     [SerializeField] protected float timespawn = 0;
 
+    
+
     private int waveCouter = 0;
 
     private float timeBetweenWaves = 2f;

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: GreenData
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   speed: 3
-  hp: 15
+  hp: 4
   damage: 10
   goldFall: 5

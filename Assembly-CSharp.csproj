@@ -70,6 +70,7 @@
     <Compile Include="Assets\NewMonoBehaviour.cs" />
     <Compile Include="Assets\_Scenes\Script\ScriptableObject\TowerDt\TowerData.cs" />
     <Compile Include="Assets\_Scenes\Script\Path\Path.cs" />
+    <Compile Include="Assets\_Scenes\Script\Player\Platform.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

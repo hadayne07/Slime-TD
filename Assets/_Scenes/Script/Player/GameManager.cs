@@ -7,7 +7,20 @@
         public int Hp { get => hp; }
         public static Action<int> CurrentHp;
         public static Action<int> CurrentGold;
+        public static GameManager Instance { get; private set; }
     [SerializeField] protected int gold = 0;
+
+    private void Awake()
+    {
+        if ( Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
     private void OnEnable()
     {
         EnemyMove.OnEnemyReachEnd += HandleEnemyReachEnd;
@@ -48,5 +61,12 @@
         UpdateGold(data.GoldFall);
         CurrentGold?.Invoke(gold);
 
+    }
+
+    
+
+    public void SetTimeScale ( float scale)
+    {
+        Time.timeScale = scale;
     }
     }
