@@ -17,3 +17,6 @@ MonoBehaviour:
   range: 3.55
   timeShoot: 0.4
   bulletSize: 1
+  cost: 40
+  sprite: {fileID: 823603534169747421, guid: 45d25bf7288f78945ac217050cd3445f, type: 3}
+  Prefab: {fileID: 1902489477293032318, guid: 5b17c35da5ad2034dabe41c0c0809b42, type: 3}

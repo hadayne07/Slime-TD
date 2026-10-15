@@ -14,5 +14,11 @@ public class TowerData : ScriptableObject
     [SerializeField] private float bulletSize;
     public float BulletSize => bulletSize;
 
+    [SerializeField] private int cost;
+    public int Cost => cost;
 
+    [SerializeField] private Sprite sprite;
+    public Sprite Sprite => sprite;
+
+    public GameObject Prefab;
 }

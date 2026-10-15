@@ -1,4 +1,6 @@
-using System;
+﻿using System;
+using System.Collections;
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,8 +8,10 @@ public class Platform : MonoBehaviour
 {
     public static Action<Platform> OnclickPlatform;
     [SerializeField] LayerMask platformLayer;
+    public static bool OnPlatformOpen { get; set; } = false;
     private void Update()
     {
+        if (OnPlatformOpen) return;
         CheckClick();
     }
 
@@ -29,4 +33,18 @@ public class Platform : MonoBehaviour
             }
         }
     }
+
+    public void BuildTower(TowerData data)
+    {
+        
+            GameObject Tower = Instantiate(data.Prefab, transform.position, Quaternion.identity, transform);
+            Tower.SetActive(true);
+            GameManager.Instance.SpendGold(data.Cost);
+        
+       
+        
+
+    }
+
+   
 }

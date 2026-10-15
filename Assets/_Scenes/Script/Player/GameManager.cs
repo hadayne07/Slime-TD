@@ -1,14 +1,17 @@
-    using System;
+﻿    using System;
     using UnityEngine;
 
     public class GameManager : MonoBehaviour
     {
         [SerializeField] private int hp = 100;
+    [SerializeField] private float gamespeed = 1f;
+    public float GameSpeed => gamespeed;
         public int Hp { get => hp; }
         public static Action<int> CurrentHp;
         public static Action<int> CurrentGold;
         public static GameManager Instance { get; private set; }
-    [SerializeField] protected int gold = 0;
+    [SerializeField] protected int gold;
+    public int Gold => gold;
 
     private void Awake()
     {
@@ -25,6 +28,7 @@
     {
         EnemyMove.OnEnemyReachEnd += HandleEnemyReachEnd;
         EnemyStatus.goldplus += HandleEnemyDestroyed;
+  
 
 
     }
@@ -33,6 +37,7 @@
     {
         EnemyMove.OnEnemyReachEnd -= HandleEnemyReachEnd;
         EnemyStatus.goldplus -= HandleEnemyDestroyed;
+
     }
 
     private void Start()
@@ -68,5 +73,17 @@
     public void SetTimeScale ( float scale)
     {
         Time.timeScale = scale;
+    }
+
+    public void SetGameSpeed( float newspeed)
+    {
+        gamespeed = newspeed;
+        SetTimeScale(gamespeed);
+    }
+    
+    public void SpendGold( int cost)
+    {
+        gold -= cost;
+        CurrentGold?.Invoke(gold);
     }
     }
