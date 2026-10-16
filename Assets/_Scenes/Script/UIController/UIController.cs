@@ -2,20 +2,33 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Scene = UnityEngine.SceneManagement.Scene;
 
 public class UIController : MonoBehaviour
 {
     [SerializeField] private TMP_Text waveText;
     [SerializeField] private TMP_Text hpText;
     [SerializeField] private TMP_Text goldText;
+
     [SerializeField] private GameObject towerPanel;
+
+    [SerializeField] private GameObject pausePanel;
+    [SerializeField] private GameObject LosePanel;
+    private bool isGamePause = false;
+
+
     [SerializeField] private GameObject towerCardPrefab;
+
     [SerializeField] private Transform towerCardContainer;
-    [SerializeField] private GameObject notgoldEnoughText;
+
+    [SerializeField] private TMP_Text warningText;
+
     [SerializeField] private Button SpeedButton05;
     [SerializeField] private Button SpeedButton1;
     [SerializeField] private Button SpeedButton2;
+
     [SerializeField]private Color normalButton = Color.white;
     [SerializeField]private Color selectedButton = Color.blue;
     [SerializeField]private Color normalText = Color.black;
@@ -47,7 +60,8 @@ public class UIController : MonoBehaviour
     private void Awake()
     {
         towerPanel.SetActive(false);
-        notgoldEnoughText.SetActive(false);
+        pausePanel.SetActive(false);
+   
         SpeedButton05.onClick.AddListener(() => SetTimeSpeed(0.5f));
         SpeedButton1.onClick.AddListener(() => SetTimeSpeed(1f));
         SpeedButton2.onClick.AddListener(() => SetTimeSpeed(2f));
@@ -63,6 +77,7 @@ public class UIController : MonoBehaviour
     private void UpdateHp( int hp)
     {
         hpText.text = $"HP: {hp}";
+        if (GameManager.Instance.Hp <= 0) ShowLosePanel();
     }
     private void UpdateGold(int gold)
     {
@@ -83,8 +98,15 @@ public class UIController : MonoBehaviour
         Platform.OnPlatformOpen = false;
         GameManager.Instance.SetTimeScale(GameManager.Instance.GameSpeed);
     }
+
+    public void ShowLosePanel()
+    {
+        GameManager.Instance.SetTimeScale(0f);
+        LosePanel.SetActive(true);
+    }
     private void HandleOnClickPlatform(Platform platform)
     {
+
         currentPlatform = platform;
         ShowTowerPanel();
     }
@@ -114,6 +136,12 @@ public class UIController : MonoBehaviour
 
     protected void HandleSelectedTower(TowerData data)
     {
+        if (currentPlatform.transform.childCount > 0)
+        {
+            StartCoroutine(ShowMess(" This Place Already have tower!"));
+            HideTowerPanel();
+            return;
+        }
         if (GameManager.Instance.Gold >= data.Cost)
         {
             currentPlatform.BuildTower(data);
@@ -123,17 +151,18 @@ public class UIController : MonoBehaviour
         else
         {
           
-            StartCoroutine(ShowMess());
+            StartCoroutine(ShowMess(" Not Enough Gold"));
             HideTowerPanel();
         }
 
     }
 
-    private IEnumerator ShowMess()
+    private IEnumerator ShowMess( string mess)
     {
-        notgoldEnoughText.SetActive(true);
-        yield return new WaitForSecondsRealtime(3f);
-        notgoldEnoughText.SetActive(false);
+        warningText.text = mess;
+        warningText.gameObject.SetActive(true);
+        yield return new WaitForSecondsRealtime(1f);
+        warningText.gameObject.SetActive(false);
     }
 
     private void SetTimeSpeed ( float time)
@@ -159,5 +188,42 @@ public class UIController : MonoBehaviour
         UpdateButtonVisual(SpeedButton1, speed == 1f);
         UpdateButtonVisual(SpeedButton2, speed == 2f);
     }
+
+    public void TogglePause()
+    {
+        if (towerPanel.activeSelf)
+            return;
+        if ( isGamePause)
+        {
+            pausePanel.SetActive(false);
+            GameManager.Instance.SetTimeScale(GameManager.Instance.GameSpeed);
+            isGamePause = false;
+        }
+        else
+        {
+            pausePanel.SetActive(true);
+            GameManager.Instance.SetTimeScale(0f);
+            isGamePause = true;
+        }
+    }
+
+    public void RestartLevel()
+    {
+        GameManager.Instance.SetTimeScale(1f);
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.buildIndex);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
+    public void GoMainMenu()
+    {
+        SceneManager.LoadScene("Main Menu");
+        Debug.Log("RUn");
+    }
+   
 }
 

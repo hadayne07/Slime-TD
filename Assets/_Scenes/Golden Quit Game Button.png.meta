@@ -1,0 +1,715 @@
+fileFormatVersion: 2
+guid: 89577052b262ebb4f845a3bc6a88f1e4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2544728547404921287
+    second: Golden Quit Game Button_0
+  - first:
+      213: 5967760698107970215
+    second: Golden Quit Game Button_1
+  - first:
+      213: 7437372907066812927
+    second: Golden Quit Game Button_2
+  - first:
+      213: 5074268204041525140
+    second: Golden Quit Game Button_3
+  - first:
+      213: 2227905856055366084
+    second: Golden Quit Game Button_4
+  - first:
+      213: 6746846921768904841
+    second: Golden Quit Game Button_5
+  - first:
+      213: 4428067992843564703
+    second: Golden Quit Game Button_6
+  - first:
+      213: -8016851487331315311
+    second: Golden Quit Game Button_7
+  - first:
+      213: -5717114801684478961
+    second: Golden Quit Game Button_8
+  - first:
+      213: 3901925888352160976
+    second: Golden Quit Game Button_9
+  - first:
+      213: 5960706105797664458
+    second: Golden Quit Game Button_10
+  - first:
+      213: -9150594594887856893
+    second: Golden Quit Game Button_11
+  - first:
+      213: 9153779758904631520
+    second: Golden Quit Game Button_12
+  - first:
+      213: 1191612150014484832
+    second: Golden Quit Game Button_13
+  - first:
+      213: 8319943808781590384
+    second: Golden Quit Game Button_14
+  - first:
+      213: -3023994848961555686
+    second: Golden Quit Game Button_15
+  - first:
+      213: 8751854133439974963
+    second: Golden Quit Game Button_16
+  - first:
+      213: 4196429395375414091
+    second: Golden Quit Game Button_17
+  - first:
+      213: 8157730243797478076
+    second: Golden Quit Game Button_18
+  - first:
+      213: 3661813128456444990
+    second: Golden Quit Game Button_19
+  - first:
+      213: 3144446284881996761
+    second: Golden Quit Game Button_20
+  - first:
+      213: -4146244084022550879
+    second: Golden Quit Game Button_21
+  - first:
+      213: -3584179755491685541
+    second: Golden Quit Game Button_22
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Golden Quit Game Button_0
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 21
+        width: 2097
+        height: 676
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c9bddd9121b05320800000000000000
+      internalID: 2544728547404921287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_1
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 694
+        width: 51
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a243438cbeb1d250800000000000000
+      internalID: 5967760698107970215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_2
+      rect:
+        serializedVersion: 2
+        x: 794
+        y: 615
+        width: 44
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff9e4db014bd63760800000000000000
+      internalID: 7437372907066812927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_3
+      rect:
+        serializedVersion: 2
+        x: 1066
+        y: 649
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49754f40c0c6b6640800000000000000
+      internalID: 5074268204041525140
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_4
+      rect:
+        serializedVersion: 2
+        x: 1720
+        y: 657
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c15137729c1bee10800000000000000
+      internalID: 2227905856055366084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_5
+      rect:
+        serializedVersion: 2
+        x: 1745
+        y: 643
+        width: 8
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98829fd678d91ad50800000000000000
+      internalID: 6746846921768904841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_6
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 629
+        width: 56
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f96b7bae068a37d30800000000000000
+      internalID: 4428067992843564703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_7
+      rect:
+        serializedVersion: 2
+        x: 987
+        y: 645
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1911e802c0c6eb090800000000000000
+      internalID: -8016851487331315311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_8
+      rect:
+        serializedVersion: 2
+        x: 991
+        y: 644
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f040871e06ab8a0b0800000000000000
+      internalID: -5717114801684478961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_9
+      rect:
+        serializedVersion: 2
+        x: 1503
+        y: 634
+        width: 18
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0dc81231cec662630800000000000000
+      internalID: 3901925888352160976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_10
+      rect:
+        serializedVersion: 2
+        x: 1630
+        y: 618
+        width: 58
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ace529e3f9ea8b250800000000000000
+      internalID: 5960706105797664458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 323
+        width: 5
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30d8918a2be820180800000000000000
+      internalID: -9150594594887856893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_12
+      rect:
+        serializedVersion: 2
+        x: 585
+        y: 55
+        width: 11
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e0eba12132c80f70800000000000000
+      internalID: 9153779758904631520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_13
+      rect:
+        serializedVersion: 2
+        x: 1161
+        y: 71
+        width: 21
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06127afdfe4798010800000000000000
+      internalID: 1191612150014484832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_14
+      rect:
+        serializedVersion: 2
+        x: 1223
+        y: 63
+        width: 31
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07f13a920d0667370800000000000000
+      internalID: 8319943808781590384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_15
+      rect:
+        serializedVersion: 2
+        x: 1452
+        y: 68
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a131909e4bc9806d0800000000000000
+      internalID: -3023994848961555686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_16
+      rect:
+        serializedVersion: 2
+        x: 1454
+        y: 61
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33e49bd07f4d47970800000000000000
+      internalID: 8751854133439974963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_17
+      rect:
+        serializedVersion: 2
+        x: 1581
+        y: 69
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4bdb5c2d46bc3a30800000000000000
+      internalID: 4196429395375414091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_18
+      rect:
+        serializedVersion: 2
+        x: 1295
+        y: 45
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cba620b6f64163170800000000000000
+      internalID: 8157730243797478076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_19
+      rect:
+        serializedVersion: 2
+        x: 1319
+        y: 55
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3c1283a3af51d230800000000000000
+      internalID: 3661813128456444990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_20
+      rect:
+        serializedVersion: 2
+        x: 901
+        y: 39
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9db20b17c3153ab20800000000000000
+      internalID: 3144446284881996761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_21
+      rect:
+        serializedVersion: 2
+        x: 1452
+        y: 35
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ae55cb29f49576c0800000000000000
+      internalID: -4146244084022550879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Golden Quit Game Button_22
+      rect:
+        serializedVersion: 2
+        x: 1460
+        y: 31
+        width: 13
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5b85ce808f624ec0800000000000000
+      internalID: -3584179755491685541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Golden Quit Game Button_0: 2544728547404921287
+      Golden Quit Game Button_1: 5967760698107970215
+      Golden Quit Game Button_10: 5960706105797664458
+      Golden Quit Game Button_11: -9150594594887856893
+      Golden Quit Game Button_12: 9153779758904631520
+      Golden Quit Game Button_13: 1191612150014484832
+      Golden Quit Game Button_14: 8319943808781590384
+      Golden Quit Game Button_15: -3023994848961555686
+      Golden Quit Game Button_16: 8751854133439974963
+      Golden Quit Game Button_17: 4196429395375414091
+      Golden Quit Game Button_18: 8157730243797478076
+      Golden Quit Game Button_19: 3661813128456444990
+      Golden Quit Game Button_2: 7437372907066812927
+      Golden Quit Game Button_20: 3144446284881996761
+      Golden Quit Game Button_21: -4146244084022550879
+      Golden Quit Game Button_22: -3584179755491685541
+      Golden Quit Game Button_3: 5074268204041525140
+      Golden Quit Game Button_4: 2227905856055366084
+      Golden Quit Game Button_5: 6746846921768904841
+      Golden Quit Game Button_6: 4428067992843564703
+      Golden Quit Game Button_7: -8016851487331315311
+      Golden Quit Game Button_8: -5717114801684478961
+      Golden Quit Game Button_9: 3901925888352160976
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

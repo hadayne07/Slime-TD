@@ -11,7 +11,7 @@ public class Platform : MonoBehaviour
     public static bool OnPlatformOpen { get; set; } = false;
     private void Update()
     {
-        if (OnPlatformOpen) return;
+        if (OnPlatformOpen || Time.timeScale == 0f) return;
         CheckClick();
     }
 
@@ -41,9 +41,6 @@ public class Platform : MonoBehaviour
             Tower.SetActive(true);
             GameManager.Instance.SpendGold(data.Cost);
         
-       
-        
-
     }
 
    
