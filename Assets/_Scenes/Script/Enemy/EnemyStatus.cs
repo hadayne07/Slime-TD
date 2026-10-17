@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEditor.PackageManager;
 using UnityEngine;
 
@@ -58,5 +59,21 @@ public class EnemyStatus : MonoBehaviour
     public void SetSpeed (float slow)
     {
         data.speed += slow;
+    }
+    public IEnumerator BurnRoutine(float duration , int damage)
+    {
+
+        float timer = 0f;
+
+        while (timer < duration && hp > 0)
+        {
+             TakeDame(damage);
+
+            yield return new WaitForSeconds(1f);
+            timer += 1f;
+        }
+
+
+
     }
 }

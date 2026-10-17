@@ -1,9 +1,9 @@
-﻿using System.Collections;
+﻿
 using UnityEngine;
 
 public class BulletFire : Bullet
 {
-    private bool isBurning = false;
+
     private void Update()
     {
         FollowTarget();
@@ -13,27 +13,21 @@ public class BulletFire : Bullet
 
     public override void OnTriggerEnter2D(Collider2D collision)
     {
-        base.OnTriggerEnter2D(collision);
         if (collision.CompareTag("Enemy"))
         {
-            StartCoroutine(BurnRoutine(3f));
-        }
-    }
+            EnemyStatus targetEnemy = collision.GetComponent<EnemyStatus>();
 
-    private IEnumerator BurnRoutine(float duration)
-    {
-        isBurning = true;
-        float timer = 0f;
+            if (targetEnemy != null)
+            {
 
-        while (timer < duration)
-        {
-            enemy.TakeDame(towerShoot.currentDame);
-
-            yield return new WaitForSeconds(1f); 
-            timer += 1f;
+                targetEnemy.StartCoroutine(targetEnemy.BurnRoutine(3f, towerShoot.currentDame));
+            }
         }
 
-        isBurning = false;
+        base.OnTriggerEnter2D(collision);
         
+
     }
+
+    
 }

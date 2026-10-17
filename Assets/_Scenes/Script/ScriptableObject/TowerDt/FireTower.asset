@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0f21fa86a3f4ea44a31d26d11f74ce7, type: 3}
   m_Name: FireTower
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
-  speedBulletlv1: 1
+  speedBulletlv1: 4
   speedBulletlv2: 5
-  damagelv1: 2
+  damagelv1: 1
   damagelv2: 6
   range: 3
   timeShoot: 1

@@ -21,6 +21,7 @@ public class Platform : MonoBehaviour
     {
         if ( Input.GetMouseButtonDown(0))
         {
+            Debug.Log("Click");
             Vector2 worldPoint = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             RaycastHit2D raycast = Physics2D.Raycast(worldPoint, Vector2.zero, Mathf.Infinity, platformLayer);
             if ( raycast.collider != null)
@@ -31,6 +32,7 @@ public class Platform : MonoBehaviour
                 if ( platform != null)
                 {
                     OnclickPlatform?.Invoke(platform);
+                    Debug.Log("OnclickPlatform");
                 }
             }
         }

@@ -17,7 +17,7 @@ public class TowerTarget : MonoBehaviour
     private void Awake()
     {
         _collider = GetComponent<CircleCollider2D>();
-        _collider.radius = data.Range/3;
+        _collider.radius = data.Range;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
