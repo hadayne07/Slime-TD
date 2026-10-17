@@ -14,7 +14,7 @@ public class TowerCard : MonoBehaviour
         
     {
         towerData = data;
-        towerImage.sprite = data.Sprite;
+        towerImage.sprite = data.Spritelv1;
         cost.text = data.Cost.ToString();
     
     }

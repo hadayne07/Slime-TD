@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -16,7 +17,9 @@ public class UIController : MonoBehaviour
 
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject LosePanel;
+    [SerializeField] private GameObject UpgradePanel;
     private bool isGamePause = false;
+    private TowerShoot selectedTower;
 
 
     [SerializeField] private GameObject towerCardPrefab;
@@ -38,6 +41,10 @@ public class UIController : MonoBehaviour
 
     [SerializeField] private TowerData[] towers;
     private List<GameObject> activeCard = new List<GameObject>();
+
+    public static UIController Instance { get; private set; }
+
+  
     private void OnEnable()
     {
         EnemySpawn.OnWaveChanged += UpdateWaveText;
@@ -59,6 +66,15 @@ public class UIController : MonoBehaviour
 
     private void Awake()
     {
+
+        if ( Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
         towerPanel.SetActive(false);
         pausePanel.SetActive(false);
    
@@ -77,7 +93,7 @@ public class UIController : MonoBehaviour
     private void UpdateHp( int hp)
     {
         hpText.text = $"HP: {hp}";
-        if (GameManager.Instance.Hp <= 0) ShowLosePanel();
+        if (GameManager.Instance.Hp <= 0) ShowPanel(LosePanel);
     }
     private void UpdateGold(int gold)
     {
@@ -87,27 +103,53 @@ public class UIController : MonoBehaviour
     public void ShowTowerPanel()
     {
         Platform.OnPlatformOpen = true;
-        towerPanel.SetActive(true);
-        GameManager.Instance.SetTimeScale(0f);
+        ShowPanel(towerPanel);
         PopulateTowerCard();
     }
 
     public void HideTowerPanel()
     {
-        towerPanel.SetActive(false);
+        HidePanel(towerPanel);
         Platform.OnPlatformOpen = false;
-        GameManager.Instance.SetTimeScale(GameManager.Instance.GameSpeed);
+       
     }
 
-    public void ShowLosePanel()
+    public void ShowPanel(GameObject panel)
     {
         GameManager.Instance.SetTimeScale(0f);
-        LosePanel.SetActive(true);
+        panel.SetActive(true);
+    }
+    public void HidePanel(GameObject panel)
+    {
+        GameManager.Instance.SetTimeScale(GameManager.Instance.GameSpeed);
+        panel.SetActive(false);
+    }
+
+    public void TogglePause()
+    {
+        if (towerPanel.activeSelf)
+            return;
+        if (isGamePause)
+        {
+            HidePanel(pausePanel);
+            isGamePause = false;
+        }
+        else
+        {
+          ShowPanel(pausePanel);
+            isGamePause = true;
+        }
     }
     private void HandleOnClickPlatform(Platform platform)
     {
-
+        
         currentPlatform = platform;
+        selectedTower = platform.TowerInstance;
+        if (selectedTower != null)
+        {
+            ShowPanel(UpgradePanel);
+            return;
+        }
         ShowTowerPanel();
     }
 
@@ -189,23 +231,7 @@ public class UIController : MonoBehaviour
         UpdateButtonVisual(SpeedButton2, speed == 2f);
     }
 
-    public void TogglePause()
-    {
-        if (towerPanel.activeSelf)
-            return;
-        if ( isGamePause)
-        {
-            pausePanel.SetActive(false);
-            GameManager.Instance.SetTimeScale(GameManager.Instance.GameSpeed);
-            isGamePause = false;
-        }
-        else
-        {
-            pausePanel.SetActive(true);
-            GameManager.Instance.SetTimeScale(0f);
-            isGamePause = true;
-        }
-    }
+   
 
     public void RestartLevel()
     {
@@ -222,8 +248,28 @@ public class UIController : MonoBehaviour
     public void GoMainMenu()
     {
         SceneManager.LoadScene("Main Menu");
-        Debug.Log("RUn");
+       
     }
-   
+
+    public void UpgradeSelectedTower()
+    {
+       if (selectedTower.TryUpgrade() == false)
+        {
+            StartCoroutine(ShowMess(" Not Enough Gold or MaxLevel"));
+            HidePanel(UpgradePanel);
+            return;
+        }
+
+        StartCoroutine(ShowMess(" UpgradeSuccesful"));
+        HidePanel(UpgradePanel);
+    }
+   public void NoButtonUpgradePanel()
+    {
+        Platform.OnPlatformOpen = false;
+        HidePanel(UpgradePanel);
+        selectedTower = null;
+        currentPlatform = null;
+
+    }
 }
 

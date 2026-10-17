@@ -1,19 +1,24 @@
-using UnityEngine;
+﻿using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
 public class Bullet : MonoBehaviour
 {
-    [SerializeField] private TowerData data;
+    [SerializeField] public TowerShoot towerShoot;
     [SerializeField] private Transform currentTarget;
+    public EnemyStatus enemy;
 
-    private void Start()
+
+    private void Awake()
     {
-        transform.localScale = Vector3.one * data.BulletSize;
+        towerShoot = GetComponentInParent<TowerShoot>();
+        transform.localScale = Vector3.one * towerShoot.sizeBullet;
+
     }
     private void Update()
     {
         FollowTarget();
         LookTarget();
+       
     }
 
     protected void FollowTarget()
@@ -24,7 +29,7 @@ public class Bullet : MonoBehaviour
             return;
         }
 
-        transform.position = Vector2.MoveTowards(transform.position,  currentTarget.position,  data.Speed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position,  currentTarget.position, towerShoot.currentSpeed  * Time.deltaTime);
     }
     public void SetTarget( Transform target)
     {
@@ -32,12 +37,12 @@ public class Bullet : MonoBehaviour
        
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public virtual void OnTriggerEnter2D(Collider2D collision)
     {
         if ( collision.CompareTag("Enemy"))
         {
-            EnemyStatus enemy = collision.GetComponent<EnemyStatus>();
-            enemy.TakeDame(data.Damage);
+           enemy = collision.GetComponent<EnemyStatus>();
+            enemy.TakeDame(towerShoot.currentDame);
      
             gameObject.SetActive(false);
         }
@@ -53,4 +58,6 @@ public class Bullet : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
+
+   
 }

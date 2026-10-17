@@ -12,11 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0f21fa86a3f4ea44a31d26d11f74ce7, type: 3}
   m_Name: StrongTower
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
-  speedBullet: 2
-  damage: 6
+  speedBulletlv1: 1
+  speedBulletlv2: 10
+  damagelv1: 1
+  damagelv2: 6
   range: 4
   timeShoot: 2
   bulletSize: 3
   cost: 50
-  sprite: {fileID: 1704872509302500955, guid: 45d25bf7288f78945ac217050cd3445f, type: 3}
+  upgradecost: 40
+  spritelv1: {fileID: 21300000, guid: c2469c8fc58059f40b6c1edd14b4c0ae, type: 3}
+  spritelv2: {fileID: 21300000, guid: f8e54d0087182a74cba660478eb83e90, type: 3}
   Prefab: {fileID: 7444842100492713818, guid: 7a278bdeb4a16e64f835879993c14bf5, type: 3}

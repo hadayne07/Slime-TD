@@ -12,11 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0f21fa86a3f4ea44a31d26d11f74ce7, type: 3}
   m_Name: FastTower
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
-  speedBullet: 7
-  damage: 2
+  speedBulletlv1: 1
+  speedBulletlv2: 5
+  damagelv1: 2
+  damagelv2: 3
   range: 3.55
   timeShoot: 0.4
   bulletSize: 1
   cost: 40
-  sprite: {fileID: 823603534169747421, guid: 45d25bf7288f78945ac217050cd3445f, type: 3}
+  upgradecost: 30
+  spritelv1: {fileID: -3476730113220672089, guid: 6bcd12141f04850459d15c07e0a6996e, type: 3}
+  spritelv2: {fileID: 21300000, guid: 3b9c1207529596a479887532450cfa00, type: 3}
   Prefab: {fileID: 1902489477293032318, guid: 5b17c35da5ad2034dabe41c0c0809b42, type: 3}

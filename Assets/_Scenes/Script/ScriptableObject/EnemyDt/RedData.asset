@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   speed: 4
   hp: 7
-  damage: 12
+  damage: 1
   goldFall: 6

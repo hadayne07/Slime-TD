@@ -3,10 +3,14 @@
 [CreateAssetMenu(fileName = "TowerData", menuName = "Scriptable Objects/TowerData")]
 public class TowerData : ScriptableObject
 {
-    [SerializeField] private float speedBullet;
-    public float Speed { get => speedBullet; }
-    [SerializeField] private int damage;
-    public int Damage { get => damage; }
+    [SerializeField] private float speedBulletlv1;
+    public float Speedlv1 { get => speedBulletlv1; }
+    [SerializeField] private float speedBulletlv2;
+    public float Speedlv2 { get => speedBulletlv2; }
+    [SerializeField] private int damagelv1;
+    public int Damagelv1 { get => damagelv1; }
+    [SerializeField] private int damagelv2;
+    public int Damagelv2 { get => damagelv2; }
     [SerializeField] private float range;
     public float Range { get => range; }
     [SerializeField] private float timeShoot;
@@ -16,9 +20,13 @@ public class TowerData : ScriptableObject
 
     [SerializeField] private int cost;
     public int Cost => cost;
+    [SerializeField] private int upgradecost;
+    public int UpgradeCost => upgradecost;
 
-    [SerializeField] private Sprite sprite;
-    public Sprite Sprite => sprite;
+    [SerializeField] private Sprite spritelv1;
+    public Sprite Spritelv1 => spritelv1;
+    [SerializeField] private Sprite spritelv2;
+    public Sprite Spritelv2 => spritelv2;
 
     public GameObject Prefab;
 }

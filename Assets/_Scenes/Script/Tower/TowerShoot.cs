@@ -1,18 +1,34 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TowerShoot : MonoBehaviour
 {
     [SerializeField] private TowerData data;
     public TowerData Data { get => data; }
     [SerializeField] private ObjectPooler pooler;
+       public int currentDame;
+      public float currentSpeed;
+    public SpriteRenderer spriteRenderer;
+    public Sprite currentSprite;
+    public float sizeBullet;
+    [SerializeField] private int currentlevel =1;
+    private int maxLevel = 2;
 
-    
+
+
     private TowerTarget target;
 
     private void Awake()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         target = GetComponent<TowerTarget>();
+        sizeBullet = data.BulletSize;
+        currentDame = data.Damagelv1;
+        currentSpeed = data.Speedlv1;
+        currentSprite = data.Spritelv1;
+        spriteRenderer.sprite = currentSprite;
     }
+
+    
 
     public virtual void Shoot()
     {
@@ -26,8 +42,31 @@ public class TowerShoot : MonoBehaviour
             {
                 bulletScript.SetTarget(target.enemiesInRange[0].transform);
             }
-            Debug.Log("shoot");
+           
          
         }
     }
+    public void CheckLevelData(int dataDamage, float dataSpeed , Sprite sprite)
+    {
+        currentDame = dataDamage;
+        currentSpeed = dataSpeed;
+        currentSprite = sprite;
+        spriteRenderer.sprite = currentSprite;
+
+    }
+
+    public bool TryUpgrade ()
+    {
+        if (currentlevel == maxLevel || GameManager.Instance.Gold < data.UpgradeCost)
+        {
+            Debug.Log("false");
+            return false;
+        }
+        currentlevel++;
+        CheckLevelData(data.Damagelv2, data.Speedlv2 , data.Spritelv2);
+        GameManager.Instance.SpendGold(data.UpgradeCost);
+        return true;
+    }
+
+  
 }

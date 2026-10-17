@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEditor.PackageManager;
 using UnityEngine;
 
@@ -8,11 +8,13 @@ public class EnemyStatus : MonoBehaviour
     public static Action<EnemyStatus> enemyDie;
     public static Action<EnemyData> goldplus;
     [SerializeField] private float hp;
+ 
     [SerializeField] private Transform healthbar;
     private Vector3 healthBarOriginalScale;
     private void OnEnable()
     {
         hp = data.hp;
+       
         UpdateHealthBar();
   
     }
@@ -49,4 +51,12 @@ public class EnemyStatus : MonoBehaviour
         healthbar.localScale = scale;
     }
 
+    public void HasSlowed ( float slow)
+    {
+        data.speed -= slow;
+    }
+    public void SetSpeed (float slow)
+    {
+        data.speed += slow;
+    }
 }

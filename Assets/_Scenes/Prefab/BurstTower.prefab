@@ -57,18 +57,18 @@ GameObject:
   m_Component:
   - component: {fileID: 8518555774636485437}
   - component: {fileID: 4815742546597477982}
-  - component: {fileID: 160308035046523575}
   - component: {fileID: 2163416420799098325}
   - component: {fileID: 8122187724359281000}
   - component: {fileID: 915095859136827923}
   - component: {fileID: 3297930838481753126}
+  - component: {fileID: 160308035046523575}
   m_Layer: 0
   m_Name: BurstTower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8518555774636485437
 Transform:
   m_ObjectHideFlags: 0
@@ -135,30 +135,16 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 3
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 6765430204225788471, guid: 45d25bf7288f78945ac217050cd3445f, type: 3}
+  m_Sprite: {fileID: 1178042814624125402, guid: 003df21247a537d4db6e188064d5434e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.85, y: 0.96}
+  m_Size: {x: 6.12, y: 6.47}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &160308035046523575
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3692499505302823458}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67654d92bf544b148861e906b2556934, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  data: {fileID: 11400000, guid: 3b845b60dc2b60840b728e984a507745, type: 2}
-  enemiesInRange: []
 --- !u!58 &2163416420799098325
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -249,6 +235,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   data: {fileID: 11400000, guid: 3b845b60dc2b60840b728e984a507745, type: 2}
   pooler: {fileID: 6048352510401694068}
+  currentDame: 0
+  currentSpeed: 0
+  spriteRenderer: {fileID: 0}
+  currentSprite: {fileID: 0}
+  sizeBullet: 0
+  currentlevel: 1
+--- !u!114 &160308035046523575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3692499505302823458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67654d92bf544b148861e906b2556934, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  data: {fileID: 11400000, guid: 3b845b60dc2b60840b728e984a507745, type: 2}
+  enemiesInRange: []
 --- !u!1 &4245386283617127766
 GameObject:
   m_ObjectHideFlags: 0
@@ -333,12 +339,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -3867061678365283265, guid: 2e9f8cb76d148814c9bd1ac72b41d0c7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bc8891f46e8f88443879bb2b8c619849, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.22, y: 0.22}
+  m_Size: {x: 0.26, y: 0.22}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -355,8 +361,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f31b6a9ba460c6449b1a6eb0a3b83c4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
-  data: {fileID: 11400000, guid: 3b845b60dc2b60840b728e984a507745, type: 2}
+  towerShoot: {fileID: 0}
   currentTarget: {fileID: 0}
+  enemy: {fileID: 0}
 --- !u!58 &5467153820958308969
 CircleCollider2D:
   m_ObjectHideFlags: 0

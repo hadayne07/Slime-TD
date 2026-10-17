@@ -8,6 +8,8 @@ public class Platform : MonoBehaviour
 {
     public static Action<Platform> OnclickPlatform;
     [SerializeField] LayerMask platformLayer;
+    private TowerShoot towerInstance;
+    public TowerShoot TowerInstance => towerInstance;
     public static bool OnPlatformOpen { get; set; } = false;
     private void Update()
     {
@@ -36,8 +38,10 @@ public class Platform : MonoBehaviour
 
     public void BuildTower(TowerData data)
     {
-        
-            GameObject Tower = Instantiate(data.Prefab, transform.position, Quaternion.identity, transform);
+
+        if (data == null || data.Prefab == null || towerInstance != null) return;
+        GameObject Tower = Instantiate(data.Prefab, transform.position, Quaternion.identity, transform);
+        towerInstance = Tower.GetComponentInChildren<TowerShoot>(true);
             Tower.SetActive(true);
             GameManager.Instance.SpendGold(data.Cost);
         
