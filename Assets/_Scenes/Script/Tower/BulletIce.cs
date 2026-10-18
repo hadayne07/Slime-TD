@@ -7,22 +7,25 @@ public class BulletIce : Bullet
     {
         FollowTarget();
         LookTarget();
-
     }
+
     public override void OnTriggerEnter2D(Collider2D collision)
     {
-        base.OnTriggerEnter2D(collision);
+        // 1. XỬ LÝ LÀM CHẬM TRƯỚC
         if (collision.CompareTag("Enemy"))
         {
-            StartCoroutine(SlowRoutine());
-        }
-    }
+            // Lấy thành phần EnemyStatus từ quái vật bị trúng đạn
+            EnemyStatus targetEnemy = collision.GetComponent<EnemyStatus>();
 
-    private IEnumerator SlowRoutine()
-    {
-        enemy.HasSlowed(3f);
-        yield return new WaitForSeconds(3f);
-        enemy.SetSpeed(3f);
-           
+            if (targetEnemy != null)
+            {
+                // Gọi hàm kích hoạt làm chậm nằm trên chính quái vật
+                targetEnemy.ApplySlowEffect(3f, 3f); // Làm chậm giảm 3 tốc độ, trong 3 giây
+            }
+        }
+
+        // 2. HỦY VIÊN ĐẠN SAU CÙNG
+        base.OnTriggerEnter2D(collision);
     }
 }
+

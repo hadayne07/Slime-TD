@@ -60,14 +60,14 @@ public class EnemyStatus : MonoBehaviour
     {
         data.speed += slow;
     }
-    public IEnumerator BurnRoutine(float duration , int damage)
+    public IEnumerator BurnRoutine(float duration, int damage)
     {
 
         float timer = 0f;
 
         while (timer < duration && hp > 0)
         {
-             TakeDame(damage);
+            TakeDame(damage);
 
             yield return new WaitForSeconds(1f);
             timer += 1f;
@@ -76,4 +76,44 @@ public class EnemyStatus : MonoBehaviour
 
 
     }
+    // Thêm biến này lên đầu class EnemyStatus để kiểm tra tránh trùng lặp hiệu ứng làm chậm nếu trúng nhiều đạn băng
+    private bool isSlowed = false;
+
+    // Hàm này bạn thêm vào cuối class EnemyStatus nhé:
+    public void ApplySlowEffect(float slowAmount, float duration)
+    {
+        // Nếu chưa bị làm chậm thì mới bắt đầu chạy Coroutine đếm giờ
+        if (!isSlowed)
+        {
+            StartCoroutine(SlowRoutine(slowAmount, duration));
+        }
+    }
+
+    private IEnumerator SlowRoutine(float slowAmount, float duration)
+    {
+        isSlowed = true;
+
+       
+        HasSlowed(slowAmount);
+        Debug.Log(gameObject.name + " bị làm chậm!");
+
+        float timer = 0f;
+    
+        while (timer < duration && hp > 0)
+        {
+            yield return new WaitForSeconds(1f);
+            timer += 1f;
+        }
+
+
+        if (hp > 0)
+        {
+            SetSpeed(slowAmount);
+            Debug.Log(gameObject.name + " đã hết bị làm chậm.");
+        }
+
+        isSlowed = false;
+    }
+
+
 }
