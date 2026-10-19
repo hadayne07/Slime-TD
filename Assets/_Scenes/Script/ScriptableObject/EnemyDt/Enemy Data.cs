@@ -3,9 +3,11 @@
 [CreateAssetMenu(fileName = "EnemyData", menuName = "Scriptable Objects/EnemyData")]
 public class EnemyData : ScriptableObject
 {
-    [SerializeField] public float speed;
+    [SerializeField] private float speed;
+    public float Speed => speed;
 
-    [SerializeField] public float hp;
+    [SerializeField] private int hp;
+    public int Hp => hp;
    
     [SerializeField] protected int damage;
     public int Damage { get => damage; }

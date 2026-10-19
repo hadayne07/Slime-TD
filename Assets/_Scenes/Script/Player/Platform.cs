@@ -17,25 +17,26 @@ public class Platform : MonoBehaviour
         CheckClick();
     }
 
+   
     private void CheckClick()
     {
-        if ( Input.GetMouseButtonDown(0))
-        {
-            Debug.Log("Click");
-            Vector2 worldPoint = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-            RaycastHit2D raycast = Physics2D.Raycast(worldPoint, Vector2.zero, Mathf.Infinity, platformLayer);
-            if ( raycast.collider != null)
-            {
-                
-            
-            Platform platform = raycast.collider.GetComponent<Platform>();
-                if ( platform != null)
-                {
-                    OnclickPlatform?.Invoke(platform);
-                    Debug.Log("OnclickPlatform");
-                }
-            }
-        }
+        Pointer pointer = Pointer.current;
+        if (pointer == null || !pointer.press.wasPressedThisFrame)
+            return;
+
+        Camera mainCamera = Camera.main;
+        if (mainCamera == null)
+            return;
+
+        Vector2 screenPosition = pointer.position.ReadValue();
+        Vector2 worldPoint = mainCamera.ScreenToWorldPoint(screenPosition);
+        Collider2D hitCollider = Physics2D.OverlapPoint(worldPoint, platformLayer);
+        if (hitCollider == null)
+            return;
+
+        Platform platform = hitCollider.GetComponentInParent<Platform>();
+        if (platform != null)
+            OnclickPlatform?.Invoke(platform);
     }
 
     public void BuildTower(TowerData data)

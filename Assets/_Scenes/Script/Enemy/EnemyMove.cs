@@ -4,6 +4,7 @@ public class EnemyMove : MonoBehaviour
 {
     [SerializeField] private EnemyData data;
     [SerializeField] protected Path currentpath;
+    private EnemyStatus enemyStatus;
     public static event Action<EnemyData> OnEnemyReachEnd;
     
     protected Vector3 targetWaypoint;
@@ -13,6 +14,7 @@ public class EnemyMove : MonoBehaviour
     private void Awake()
     {
         currentpath = GameObject.FindWithTag("PathWave").GetComponent<Path>();
+        enemyStatus = GetComponent<EnemyStatus>();
     }
     private void OnEnable()
     {
@@ -23,7 +25,7 @@ public class EnemyMove : MonoBehaviour
 
     public void Move()
     {
-        transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, data.speed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, enemyStatus.currentSpeed * Time.deltaTime);
 
 
         distance = (transform.position - targetWaypoint).magnitude;

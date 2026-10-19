@@ -25,6 +25,7 @@ public class TowerTarget : MonoBehaviour
         if (collision.CompareTag("Enemy"))
         {
             EnemyMove enemy = collision.GetComponent<EnemyMove>();
+            if(enemy.gameObject.activeSelf)
             enemiesInRange.Add(enemy);
       
         }
