@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0f21fa86a3f4ea44a31d26d11f74ce7, type: 3}
   m_Name: FastTower
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
-  speedBulletlv1: 1
-  speedBulletlv2: 5
-  damagelv1: 2
-  damagelv2: 3
+  speedBulletlv1: 2
+  speedBulletlv2: 4
+  damagelv1: 4
+  damagelv2: 7
   range: 3.55
-  timeShoot: 0.4
+  timeShoot: 0.6
   bulletSize: 1
   cost: 40
   upgradecost: 30

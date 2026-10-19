@@ -1,7 +1,8 @@
 ﻿    using System;
     using UnityEngine;
-
-    public class GameManager : MonoBehaviour
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+public class GameManager : MonoBehaviour
     {
         [SerializeField] private int hp = 100;
     [SerializeField] private float gamespeed = 1f;
@@ -10,8 +11,10 @@
         public static Action<int> CurrentHp;
         public static Action<int> CurrentGold;
         public static GameManager Instance { get; private set; }
-    [SerializeField] protected int gold;
+   
+    [SerializeField] protected int gold = 100;
     public int Gold => gold;
+   
 
     private void Awake()
     {
@@ -28,7 +31,7 @@
     {
         EnemyMove.OnEnemyReachEnd += HandleEnemyReachEnd;
         EnemyStatus.goldplus += HandleEnemyDestroyed;
-  
+
 
 
     }
@@ -37,6 +40,7 @@
     {
         EnemyMove.OnEnemyReachEnd -= HandleEnemyReachEnd;
         EnemyStatus.goldplus -= HandleEnemyDestroyed;
+
 
     }
 
@@ -86,4 +90,6 @@
         gold -= cost;
         CurrentGold?.Invoke(gold);
     }
+
+   
     }

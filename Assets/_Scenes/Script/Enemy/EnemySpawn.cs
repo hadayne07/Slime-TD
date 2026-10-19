@@ -99,7 +99,7 @@ public class EnemySpawn : MonoBehaviour
             if (wavesCoolDown <= 0)
             {
                 waveCouter++;
-                currentWaveIndex = (currentWaveIndex + 1) % waves.Length;
+                currentWaveIndex++;
                 spawncouter = 0;
                 enemiesRemoved = 0;
                 timespawn = 0f;

@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0f21fa86a3f4ea44a31d26d11f74ce7, type: 3}
   m_Name: StrongTower
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
-  speedBulletlv1: 1
-  speedBulletlv2: 10
-  damagelv1: 1
-  damagelv2: 6
+  speedBulletlv1: 4
+  speedBulletlv2: 8
+  damagelv1: 4
+  damagelv2: 8
   range: 4
   timeShoot: 2
-  bulletSize: 3
+  bulletSize: 1
   cost: 50
   upgradecost: 40
   spritelv1: {fileID: 21300000, guid: c2469c8fc58059f40b6c1edd14b4c0ae, type: 3}

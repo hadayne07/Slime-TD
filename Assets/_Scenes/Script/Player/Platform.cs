@@ -37,6 +37,7 @@ public class Platform : MonoBehaviour
         Platform platform = hitCollider.GetComponentInParent<Platform>();
         if (platform != null)
             OnclickPlatform?.Invoke(platform);
+        Debug.Log("Click");
     }
 
     public void BuildTower(TowerData data)

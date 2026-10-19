@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: IceTower
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
   speedBulletlv1: 1
-  speedBulletlv2: 5
-  damagelv1: 1
-  damagelv2: 3
+  speedBulletlv2: 3
+  damagelv1: 4
+  damagelv2: 6
   range: 3
-  timeShoot: 2
-  bulletSize: 3
-  cost: 90
+  timeShoot: 1.5
+  bulletSize: 2
+  cost: 70
   upgradecost: 40
   spritelv1: {fileID: -7752046963030799876, guid: 99838944cd575e648a86b417821e122a, type: 3}
   spritelv2: {fileID: -3476730113220672089, guid: 6bcd12141f04850459d15c07e0a6996e, type: 3}
