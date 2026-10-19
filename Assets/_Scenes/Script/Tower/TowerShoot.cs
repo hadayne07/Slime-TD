@@ -32,7 +32,7 @@ public class TowerShoot : MonoBehaviour
 
     public virtual void Shoot()
     {
-        if(target.enemiesInRange.Count >0)
+        if(target.enemiesInRange.Count >0 && target.enemiesInRange[0].gameObject != null)
         {
             GameObject bullet = pooler.GetPoolObj();
             bullet.transform.position = transform.position;

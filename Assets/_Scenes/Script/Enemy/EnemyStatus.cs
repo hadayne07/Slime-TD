@@ -1,23 +1,34 @@
 ﻿using System;
 using System.Collections;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class EnemyStatus : MonoBehaviour
 {
-    [SerializeField]private EnemyData data;
+    [SerializeField] private EnemyData data;
     public static Action<EnemyStatus> enemyDie;
     public static Action<EnemyData> goldplus;
     [SerializeField] private float hp;
- 
+
     [SerializeField] private Transform healthbar;
     private Vector3 healthBarOriginalScale;
+
+    private Coroutine burnCoroutine;
+    private float burnExpiresAt;
+    private float burnTickInterval = 1f;
+    private int burnDamage;
+
+    public float currentSpeed;
+    private bool isSlowed = false;
+
     private void OnEnable()
     {
-        hp = data.hp;
-       
+        hp = data.Hp;
+        currentSpeed = data.Speed;
+        burnCoroutine = null;
+        burnExpiresAt = 0f;
+        burnTickInterval = 1f;
+        burnDamage = 0;
         UpdateHealthBar();
-  
     }
 
     private void Awake()
@@ -25,10 +36,19 @@ public class EnemyStatus : MonoBehaviour
         healthBarOriginalScale = healthbar.localScale;
     }
 
+    private void OnDisable()
+    {
+        if (burnCoroutine != null)
+            StopCoroutine(burnCoroutine);
+
+        burnCoroutine = null;
+        burnExpiresAt = 0f;
+        burnDamage = 0;
+    }
 
     private void Update()
     {
-         if (hp <= 0)
+        if (hp <= 0)
         {
             goldplus?.Invoke(data);
             enemyDie?.Invoke(this);
@@ -37,83 +57,86 @@ public class EnemyStatus : MonoBehaviour
     }
 
     public void TakeDame(int dame)
-
     {
         hp -= dame;
         UpdateHealthBar();
-
     }
 
     protected void UpdateHealthBar()
     {
-        float healthBarPercent = hp / data.hp;
+        float healthBarPercent = hp / data.Hp;
         Vector3 scale = healthBarOriginalScale;
         scale.x = healthBarOriginalScale.x * healthBarPercent;
         healthbar.localScale = scale;
     }
 
-    public void HasSlowed ( float slow)
+    public void HasSlowed(float slow)
     {
-        data.speed -= slow;
+        currentSpeed -= slow;
     }
-    public void SetSpeed (float slow)
+
+    public void SetSpeed(float slow)
     {
-        data.speed += slow;
+       currentSpeed+= slow;
     }
-    public IEnumerator BurnRoutine(float duration, int damage)
+
+
+    public void ApplyBurn(int damage, float duration, float tickInterval = 1f)
     {
+        if (hp <= 0 || damage <= 0 || duration <= 0 || !isActiveAndEnabled)
+            return;
 
-        float timer = 0f;
+        burnDamage = damage;
+        burnTickInterval = Mathf.Max(0.1f, tickInterval);
+        burnExpiresAt = Time.time + duration;
 
-        while (timer < duration && hp > 0)
+        if (burnCoroutine == null)
+            burnCoroutine = StartCoroutine(BurnRoutine());
+    }
+
+    private IEnumerator BurnRoutine()
+    {
+        while (hp > 0 && Time.time < burnExpiresAt)
         {
-            TakeDame(damage);
+            yield return new WaitForSeconds(burnTickInterval);
 
-            yield return new WaitForSeconds(1f);
-            timer += 1f;
+            if (hp <= 0 || !isActiveAndEnabled)
+                break;
+
+   
+            if (Time.time <= burnExpiresAt)
+                TakeDame(burnDamage);
         }
 
-
-
+        burnCoroutine = null;
+        burnDamage = 0;
     }
-    // Thêm biến này lên đầu class EnemyStatus để kiểm tra tránh trùng lặp hiệu ứng làm chậm nếu trúng nhiều đạn băng
-    private bool isSlowed = false;
 
-    // Hàm này bạn thêm vào cuối class EnemyStatus nhé:
     public void ApplySlowEffect(float slowAmount, float duration)
     {
-        // Nếu chưa bị làm chậm thì mới bắt đầu chạy Coroutine đếm giờ
         if (!isSlowed)
-        {
             StartCoroutine(SlowRoutine(slowAmount, duration));
-        }
     }
 
     private IEnumerator SlowRoutine(float slowAmount, float duration)
     {
         isSlowed = true;
-
-       
         HasSlowed(slowAmount);
-        Debug.Log(gameObject.name + " bị làm chậm!");
+
 
         float timer = 0f;
-    
         while (timer < duration && hp > 0)
         {
             yield return new WaitForSeconds(1f);
             timer += 1f;
         }
 
-
         if (hp > 0)
         {
             SetSpeed(slowAmount);
-            Debug.Log(gameObject.name + " đã hết bị làm chậm.");
+
         }
 
         isSlowed = false;
     }
-
-
 }

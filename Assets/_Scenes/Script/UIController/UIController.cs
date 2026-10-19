@@ -59,7 +59,7 @@ public class UIController : MonoBehaviour
 
         EnemySpawn.OnWaveChanged -= UpdateWaveText;
         GameManager.CurrentHp -= UpdateHp;
-        GameManager.CurrentGold += UpdateGold;
+        GameManager.CurrentGold -= UpdateGold;
         Platform.OnclickPlatform -= HandleOnClickPlatform;
         TowerCard.OnTowerSelected -= HandleSelectedTower;
     }
