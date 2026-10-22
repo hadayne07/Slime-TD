@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BulletIce : Bullet
 {
-    private const float SlowPercent = 0.4f;
+    private const float SlowPercent = 1f;
     private const float SlowDurationSeconds = 3f;
 
     private void Update()

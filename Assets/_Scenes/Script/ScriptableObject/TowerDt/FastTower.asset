@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: FastTower
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
   speedBulletlv1: 2
-  speedBulletlv2: 4
+  speedBulletlv2: 50
   damagelv1: 4
-  damagelv2: 7
+  damagelv2: 100
   range: 3.55
   timeShoot: 0.6
   bulletSize: 1
