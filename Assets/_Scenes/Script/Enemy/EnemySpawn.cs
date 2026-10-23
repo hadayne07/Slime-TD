@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class EnemySpawn : MonoBehaviour
@@ -20,8 +21,6 @@ public class EnemySpawn : MonoBehaviour
     
 
     private int waveCouter = 0;
-
-    private float timeBetweenWaves = 2f;
     [SerializeField] private float wavesCoolDown;
     [SerializeField] private bool isBetweenWaves = false;
    
@@ -97,9 +96,15 @@ public class EnemySpawn : MonoBehaviour
             wavesCoolDown -= Time.deltaTime;
           
             if (wavesCoolDown <= 0)
-            {
+            { if (currentWaveIndex + 1 >= waves.Length) 
+                {
+                    Debug.Log("Đã hoàn thành tất cả các Wave! Win Game!");
+                    enabled = false;
+                    return;
+                }
+            
                 waveCouter++;
-                currentWaveIndex = (currentWaveIndex + 1) % waves.Length;
+                currentWaveIndex++;
                 spawncouter = 0;
                 enemiesRemoved = 0;
                 timespawn = 0f;
@@ -113,7 +118,7 @@ public class EnemySpawn : MonoBehaviour
             if (spawncouter >= CurrentWave.enemyPerWave && enemiesRemoved >= CurrentWave.enemyPerWave)
             {
 
-                wavesCoolDown = timeBetweenWaves;
+                wavesCoolDown = CurrentWave.TimeNextWave;
                 isBetweenWaves = true;
             }
             else

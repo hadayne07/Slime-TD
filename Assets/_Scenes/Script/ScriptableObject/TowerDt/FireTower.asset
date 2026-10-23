@@ -23,4 +23,8 @@ MonoBehaviour:
   upgradecost: 30
   spritelv1: {fileID: -9213452189797336542, guid: 30792e65e0bdbac4e8e117d5a132e23e, type: 3}
   spritelv2: {fileID: -8075458869220859124, guid: 6cb154cec7f86d745978f48c18ded317, type: 3}
+  timeEffectlv1: 2
+  timeEffectlv2: 3
+  damageEffectlv1: 1
+  damageEffectlv2: 3
   Prefab: {fileID: 4572029904750119722, guid: d2955f9fed3869342ad24ad8026b67d4, type: 3}

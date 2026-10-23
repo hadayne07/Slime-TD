@@ -18,6 +18,7 @@ public class UIController : MonoBehaviour
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject LosePanel;
     [SerializeField] private GameObject UpgradePanel;
+    [SerializeField] private GameObject winPanel;
     private bool isGamePause = false;
     private TowerShoot selectedTower;
 
@@ -88,6 +89,7 @@ public class UIController : MonoBehaviour
     private void UpdateWaveText(int currentWave)
     {
         waveText.text = $"Wave: {currentWave + 1}";
+        if (currentWave == 30) ShowPanel(winPanel);
     }
 
     private void UpdateHp( int hp)

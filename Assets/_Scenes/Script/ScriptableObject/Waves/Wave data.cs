@@ -7,5 +7,7 @@ public class Wavedata : ScriptableObject
    public float timeSpawn;
 
     public int enemyPerWave;
+    [SerializeField] private float timeNextWave;
+    public float TimeNextWave => timeNextWave;
 
 }

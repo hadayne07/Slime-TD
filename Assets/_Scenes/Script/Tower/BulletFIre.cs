@@ -2,9 +2,11 @@
 
 public class BulletFire : Bullet
 {
-    private const float BurnDurationSeconds = 3f;
-    private const float BurnTickIntervalSeconds = 1f;
+   
 
+    private  float BurnTickIntervalSeconds = 1f;
+
+    
     private void Update()
     {
         FollowTarget();
@@ -21,13 +23,12 @@ public class BulletFire : Bullet
         {
             int hitDamage = towerShoot.currentDame;
 
-            // One direct hit, followed by delayed burn ticks. Repeated hits refresh
-            // the burn on this enemy instead of stacking independent damage-over-time.
+           
             targetEnemy.TakeDame(hitDamage);
-            targetEnemy.ApplyBurn(hitDamage, BurnDurationSeconds, BurnTickIntervalSeconds);
+            targetEnemy.ApplyBurn(towerShoot.currentDamageEffect, towerShoot.currentTimeEffect, BurnTickIntervalSeconds);
         }
 
-        // Consume the projectile on enemy contact even if its status component is missing.
+
         gameObject.SetActive(false);
     }
 }

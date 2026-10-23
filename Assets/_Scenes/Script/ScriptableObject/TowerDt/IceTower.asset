@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0f21fa86a3f4ea44a31d26d11f74ce7, type: 3}
   m_Name: IceTower
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
-  speedBulletlv1: 1
+  speedBulletlv1: 3
   speedBulletlv2: 5
   damagelv1: 1
   damagelv2: 3
@@ -23,4 +23,8 @@ MonoBehaviour:
   upgradecost: 40
   spritelv1: {fileID: -7752046963030799876, guid: 99838944cd575e648a86b417821e122a, type: 3}
   spritelv2: {fileID: -3476730113220672089, guid: 6bcd12141f04850459d15c07e0a6996e, type: 3}
+  timeEffectlv1: 2
+  timeEffectlv2: 3
+  damageEffectlv1: 1
+  damageEffectlv2: 3
   Prefab: {fileID: 6475057220962637251, guid: 94bd0c990d2456343a592b57ff2eb496, type: 3}

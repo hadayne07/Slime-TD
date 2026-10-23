@@ -16,11 +16,15 @@ MonoBehaviour:
   speedBulletlv2: 7
   damagelv1: 2
   damagelv2: 4
-  range: 6
+  range: 3
   timeShoot: 0.3
   bulletSize: 0.5
   cost: 30
   upgradecost: 20
   spritelv1: {fileID: 1178042814624125402, guid: 003df21247a537d4db6e188064d5434e, type: 3}
   spritelv2: {fileID: 21300000, guid: 0ec819e9a0ac6ae42921046a438c26c0, type: 3}
+  timeEffectlv1: 0
+  timeEffectlv2: 0
+  damageEffectlv1: 0
+  damageEffectlv2: 0
   Prefab: {fileID: 3692499505302823458, guid: 1bca48d6d35ddb14e9b406c66e5b88ca, type: 3}

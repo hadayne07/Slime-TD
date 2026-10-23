@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class BulletIce : Bullet
 {
-    private const float SlowPercent = 0.4f;
-    private const float SlowDurationSeconds = 3f;
+    private  float SlowPercent;
+    private  float SlowDurationSeconds;
+
+    
 
     private void Update()
     {
@@ -19,7 +21,7 @@ public class BulletIce : Bullet
         if (targetEnemy == null || !targetEnemy.CompareTag("Enemy"))
             return;
 
-        targetEnemy.ApplySlowEffect(SlowPercent, SlowDurationSeconds);
+        targetEnemy.ApplySlowEffect(towerShoot.currentDamageEffect, towerShoot.currentTimeEffect);
         base.OnTriggerEnter2D(collision);
     }
 }

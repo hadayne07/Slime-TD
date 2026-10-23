@@ -15,7 +15,7 @@ public class EnemyStatus : MonoBehaviour
     private Coroutine burnCoroutine;
     private float burnExpiresAt;
     private float burnTickInterval = 1f;
-    private int burnDamage;
+    private float burnDamage;
 
     public float currentSpeed;
     private bool isSlowed = false;
@@ -56,7 +56,7 @@ public class EnemyStatus : MonoBehaviour
         }
     }
 
-    public void TakeDame(int dame)
+    public void TakeDame(float dame)
     {
         hp -= dame;
         UpdateHealthBar();
@@ -81,7 +81,7 @@ public class EnemyStatus : MonoBehaviour
     }
 
 
-    public void ApplyBurn(int damage, float duration, float tickInterval = 1f)
+    public void ApplyBurn(float damage, float duration, float tickInterval = 1f)
     {
         if (hp <= 0 || damage <= 0 || duration <= 0 || !isActiveAndEnabled)
             return;

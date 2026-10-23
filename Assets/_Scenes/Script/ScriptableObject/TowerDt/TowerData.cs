@@ -27,6 +27,14 @@ public class TowerData : ScriptableObject
     public Sprite Spritelv1 => spritelv1;
     [SerializeField] private Sprite spritelv2;
     public Sprite Spritelv2 => spritelv2;
+    [SerializeField] private float timeEffectlv1;
+    public float TimeEffectlv1 => timeEffectlv1;
+    [SerializeField] private float timeEffectlv2;
+    public float TimeEffectlv2 => timeEffectlv2;
+    [SerializeField] private float damageEffectlv1;
+    public float DamageEffectlv1 => damageEffectlv1;
+    [SerializeField] private float damageEffectlv2;
+    public float DamageEffectlv2 => damageEffectlv2;
 
     public GameObject Prefab;
 }
