@@ -1,11 +1,13 @@
-﻿using NUnit.Framework;
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using System.Collections;
 
 public class EnemySpawn : MonoBehaviour
 {
+    public static Action OnAllWavesCompleted;
+    public int CurrentWaveIndex => currentWaveIndex;
     public static Action<int> OnWaveChanged;
     [SerializeField] private Wavedata[] waves;
     [SerializeField] protected int currentWaveIndex = 0;
@@ -16,28 +18,23 @@ public class EnemySpawn : MonoBehaviour
     [SerializeField] private int enemiesRemoved;
     public int EnemisRemoved { get => enemiesRemoved; }
     [SerializeField] private int spawncouter = 0;
-    [SerializeField] protected float timespawn = 0;
 
-    
-
-    private int waveCouter = 0;
+    [SerializeField] private int groupsStillSpawning;
     [SerializeField] private float wavesCoolDown;
     [SerializeField] private bool isBetweenWaves = false;
-   
 
     private Dictionary<EnemyType, ObjectPooler> poolDictionary;
 
     private void Awake()
     {
-
         poolDictionary = new Dictionary<EnemyType, ObjectPooler>()
         {
             { EnemyType.Green , Greenpool},
             { EnemyType.Blue , Bluepool},
             { EnemyType.Red , Redpool}
-
         };
     }
+
     private void OnEnable()
     {
         EnemyMove.OnEnemyReachEnd += HandleEnemyReachEnd;
@@ -50,79 +47,54 @@ public class EnemySpawn : MonoBehaviour
         EnemyStatus.enemyDie -= HandleEnemyDie;
     }
 
-
-   
-
     private void Update()
     {
         CheckWave();
-    
-
     }
-
-
-    private void SpawnEnemy()
-    {
-        if (spawncouter < CurrentWave.enemyPerWave)
-        {
-            timespawn += Time.deltaTime;
-            if (timespawn < CurrentWave.timeSpawn) return;
-            timespawn = 0f;
-            if (poolDictionary.TryGetValue(CurrentWave.enemy, out var pool))
-            {
-                GameObject newEnemy = pool.GetPoolObj();
-                newEnemy.transform.position = transform.position;
-
-                newEnemy.SetActive(true);
-            }
-            spawncouter++;
-        }
-       
-
-
-    }
-
 
     private void Start()
     {
-        OnWaveChanged?.Invoke(waveCouter);
+        OnWaveChanged?.Invoke(currentWaveIndex);
+        StartWaveGroup(CurrentWave);
     }
-
 
     protected void CheckWave()
     {
         if (isBetweenWaves)
         {
             wavesCoolDown -= Time.deltaTime;
-          
+
             if (wavesCoolDown <= 0)
-            { if (currentWaveIndex + 1 >= waves.Length) 
+            {
+                if (currentWaveIndex + 1 >= waves.Length)
                 {
-                    Debug.Log("Đã hoàn thành tất cả các Wave! Win Game!");
+                    // Đã hết wave — gọi OnAllWavesCompleted trước khi tắt
                     enabled = false;
+                    OnAllWavesCompleted?.Invoke();
                     return;
                 }
-            
-                waveCouter++;
                 currentWaveIndex++;
                 spawncouter = 0;
                 enemiesRemoved = 0;
-                timespawn = 0f;
-                OnWaveChanged?.Invoke(waveCouter);
+                OnWaveChanged?.Invoke(currentWaveIndex);
                 isBetweenWaves = false;
-
+                StartWaveGroup(CurrentWave);
             }
         }
         else
         {
-            if (spawncouter >= CurrentWave.enemyPerWave && enemiesRemoved >= CurrentWave.enemyPerWave)
+            if (groupsStillSpawning == 0 && enemiesRemoved >= spawncouter)
             {
+                if (currentWaveIndex >= waves.Length - 1)
+                {
+                    enabled = false;
+                    OnAllWavesCompleted?.Invoke();
+                    return;
+                }
 
                 wavesCoolDown = CurrentWave.TimeNextWave;
                 isBetweenWaves = true;
             }
-            else
-            SpawnEnemy();
         }
     }
 
@@ -131,8 +103,45 @@ public class EnemySpawn : MonoBehaviour
         enemiesRemoved++;
     }
 
-    protected void HandleEnemyDie ( EnemyStatus enemy)
+    protected void HandleEnemyDie(EnemyStatus enemy)
     {
         enemiesRemoved++;
+    }
+
+    private void StartWaveGroup(Wavedata wave)
+    {
+        groupsStillSpawning = wave.groups.Length;
+        foreach (EnemyGroup group in wave.groups)
+        {
+            StartCoroutine(SpawnGroup(group));
+        }
+    }
+
+    private IEnumerator SpawnGroup(EnemyGroup group)
+    {
+        if (group.startDelay > 0f)
+        {
+            yield return new WaitForSeconds(group.startDelay);
+        }
+
+        for (int i = 0; i < group.count; i++)
+        {
+            SpawnOneEnemy(group.enemyType);
+            if (i < group.count - 1)
+            {
+                yield return new WaitForSeconds(group.spawnInterval);
+            }
+        }
+        groupsStillSpawning--;
+    }
+
+    private void SpawnOneEnemy(EnemyType enemyType)
+    {
+        ObjectPooler pool = poolDictionary[enemyType];
+        GameObject enemy = pool.GetPoolObj();
+        if (enemy == null) return;
+        enemy.transform.position = transform.position;
+        spawncouter++;
+        enemy.SetActive(true);
     }
 }

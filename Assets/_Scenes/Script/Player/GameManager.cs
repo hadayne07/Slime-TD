@@ -1,43 +1,62 @@
-﻿    using System;
-    using UnityEngine;
+﻿using System;
+using UnityEngine;
 
-    public class GameManager : MonoBehaviour
-    {
-        [SerializeField] private int hp = 100;
+public class GameManager : MonoBehaviour
+{
+    public static GameManager Instance { get; private set; }
+
+    public static Action<int> CurrentHp;
+    public static Action<int> CurrentGold;
+
+    [Header("Player")]
+    [SerializeField] private int hp = 100;
+
+    [Min(0)]
+    [SerializeField] protected int gold = 100;
+
+    [Header("Game Speed")]
     [SerializeField] private float gamespeed = 1f;
-    public float GameSpeed => gamespeed;
-        public int Hp { get => hp; }
-        public static Action<int> CurrentHp;
-        public static Action<int> CurrentGold;
-        public static GameManager Instance { get; private set; }
-    [SerializeField] protected int gold;
+
+    public int Hp => hp;
     public int Gold => gold;
+    public float GameSpeed => gamespeed;
 
     private void Awake()
     {
-        if ( Instance != null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
-        else
-        {
-            Instance = this;
-        }
+
+        Instance = this;
+
+        hp = Mathf.Max(0, hp);
+        gold = Mathf.Max(0, gold);
+
+        SetTimeScale(gamespeed);
     }
+
     private void OnEnable()
     {
+        if (Instance != this) return;
+
         EnemyMove.OnEnemyReachEnd += HandleEnemyReachEnd;
         EnemyStatus.goldplus += HandleEnemyDestroyed;
-  
-
-
     }
 
     private void OnDisable()
     {
         EnemyMove.OnEnemyReachEnd -= HandleEnemyReachEnd;
         EnemyStatus.goldplus -= HandleEnemyDestroyed;
+    }
 
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 
     private void Start()
@@ -46,44 +65,72 @@
         CurrentGold?.Invoke(gold);
     }
 
-
-
-
-    protected void HandleEnemyReachEnd( EnemyData data)
-        {
-        hp =  Mathf.Max(0, hp -= data.Damage);
-            CurrentHp?.Invoke(hp);
-        }
-     
-    protected void UpdateGold( int  resource)
+    private void HandleEnemyReachEnd(EnemyData data)
     {
-        gold += resource;
-   
+        if (data == null) return;
+
+        hp = Mathf.Max(0, hp - data.Damage);
+
+        CurrentHp?.Invoke(hp);
     }
 
-     protected void HandleEnemyDestroyed(EnemyData data)
+    private void HandleEnemyDestroyed(EnemyData data)
     {
-        UpdateGold(data.GoldFall);
+        if (data == null) return;
+
+        AddGold(data.GoldFall);
+    }
+
+    public void AddGold(int amount)
+    {
+        if (amount < 0)
+        {
+            Debug.LogWarning("Số vàng cộng không được âm.");
+            return;
+        }
+
+        gold += amount;
+
+        CurrentGold?.Invoke(gold);
+    }
+
+    // Trả về true khi thanh toán thành công.
+    public bool TrySpendGold(int cost)
+    {
+        if (cost < 0)
+        {
+            Debug.LogWarning("Giá mua không được âm.");
+            return false;
+        }
+
+        if (gold < cost)
+        {
+            return false;
+        }
+
+        gold -= cost;
+
         CurrentGold?.Invoke(gold);
 
+        return true;
     }
 
-    
-
-    public void SetTimeScale ( float scale)
+    // Giữ tạm để script cũ không lỗi biên dịch.
+    // Mua/nâng cấp nên kiểm tra kết quả TrySpendGold().
+    public void SpendGold(int cost)
     {
-        Time.timeScale = scale;
+        TrySpendGold(cost);
     }
 
-    public void SetGameSpeed( float newspeed)
+    public void SetTimeScale(float scale)
     {
-        gamespeed = newspeed;
+        Time.timeScale = Mathf.Max(0f, scale);
+    }
+
+    public void SetGameSpeed(float newSpeed)
+    {
+        gamespeed = Mathf.Max(0f, newSpeed);
+
         SetTimeScale(gamespeed);
     }
-    
-    public void SpendGold( int cost)
-    {
-        gold -= cost;
-        CurrentGold?.Invoke(gold);
-    }
-    }
+}

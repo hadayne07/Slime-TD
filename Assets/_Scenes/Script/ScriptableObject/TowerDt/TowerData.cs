@@ -36,5 +36,7 @@ public class TowerData : ScriptableObject
     [SerializeField] private float damageEffectlv2;
     public float DamageEffectlv2 => damageEffectlv2;
 
+    public GameObject placementPreviewPrefab;
+
     public GameObject Prefab;
 }

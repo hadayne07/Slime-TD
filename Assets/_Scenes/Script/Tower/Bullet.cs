@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
+using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
@@ -7,18 +6,19 @@ public class Bullet : MonoBehaviour
     [SerializeField] private Transform currentTarget;
     public EnemyStatus enemy;
 
-
     private void Awake()
     {
         towerShoot = GetComponentInParent<TowerShoot>();
-        transform.localScale = Vector3.one * towerShoot.sizeBullet;
-
+        if (towerShoot != null)
+        {
+            transform.localScale = Vector3.one * towerShoot.sizeBullet;
+        }
     }
-    private void Update()
+
+    protected virtual void Update()
     {
         FollowTarget();
         LookTarget();
-       
     }
 
     protected void FollowTarget()
@@ -29,24 +29,27 @@ public class Bullet : MonoBehaviour
             return;
         }
 
-        transform.position = Vector2.MoveTowards(transform.position,  currentTarget.position, towerShoot.currentSpeed  * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, currentTarget.position, towerShoot.currentSpeed * Time.deltaTime);
     }
-    public void SetTarget( Transform target)
+
+    public void SetTarget(Transform target)
     {
         currentTarget = target;
-       
     }
 
     public virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        if ( collision.CompareTag("Enemy"))
+        if (collision.CompareTag("Enemy"))
         {
-           enemy = collision.GetComponent<EnemyStatus>();
-            enemy.TakeDame(towerShoot.currentDame);
-     
+            enemy = collision.GetComponent<EnemyStatus>();
+            if (enemy != null)
+            {
+                enemy.TakeDame(towerShoot.currentDame);
+            }
             gameObject.SetActive(false);
         }
     }
+
     protected void LookTarget()
     {
         if (currentTarget == null) return;
@@ -58,6 +61,4 @@ public class Bullet : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
-
-   
 }

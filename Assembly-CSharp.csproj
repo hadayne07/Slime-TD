@@ -54,27 +54,29 @@
   <ItemGroup>
     <Compile Include="Assets\_Scenes\Script\ScriptableObject\EnemyDt\Enemy Data.cs" />
     <Compile Include="Assets\_Scenes\Script\Tower\Bullet.cs" />
-    <Compile Include="Assets\_Scenes\Script\ScriptableObject\Waves\Wave data.cs" />
+    <Compile Include="Assets\_Scenes\Script\Tower\TowerPlacementManager.cs" />
     <Compile Include="Assets\_Scenes\Script\Enemy\EnemyStatus.cs" />
     <Compile Include="Assets\_Scenes\Script\Tower\BulletIce.cs" />
     <Compile Include="Assets\_Scenes\Script\Tower\TowerTarget.cs" />
     <Compile Include="Assets\_Scenes\Script\UIController\UIController.cs" />
     <Compile Include="Assets\_Scenes\Script\Tower\TowerCard.cs" />
     <Compile Include="Assets\_Scenes\Script\Player\GameManager.cs" />
+    <Compile Include="Assets\_Scenes\Script\Tower\TowerDragItem.cs" />
+    <Compile Include="Assets\_Scenes\Script\Enemy\EnemyType.cs" />
     <Compile Include="Assets\_Scenes\Script\Tower\TowerCtrl.cs" />
     <Compile Include="Assets\_Scenes\Script\Enemy\EnemySpawn.cs" />
     <Compile Include="Assets\_Scenes\Script\Pool\ObjectPooler.cs" />
     <Compile Include="Assets\_Scenes\Script\Enemy\EnemyMove.cs" />
     <Compile Include="Assets\_Scenes\Script\Enemy\EnemyCtrl.cs" />
     <Compile Include="Assets\_Scenes\Script\Tower\TowerShoot.cs" />
-    <Compile Include="Assets\_Scenes\Script\EnemyType.cs" />
     <Compile Include="Assets\NewMonoBehaviour.cs" />
     <Compile Include="Assets\_Scenes\Script\ScriptableObject\TowerDt\TowerData.cs" />
+    <Compile Include="Assets\_Scenes\Script\Enemy\Enemy Group.cs" />
     <Compile Include="Assets\_Scenes\Script\Path\Path.cs" />
     <Compile Include="Assets\_Scenes\Script\Tower\BulletFIre.cs" />
     <Compile Include="Assets\_Scenes\Script\ScriptableObject\LevelDes\LevelDes.cs" />
     <Compile Include="Assets\_Scenes\MainMenu.cs" />
-    <Compile Include="Assets\_Scenes\Script\Player\Platform.cs" />
+    <Compile Include="Assets\_Scenes\Script\Waves\Wave data.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

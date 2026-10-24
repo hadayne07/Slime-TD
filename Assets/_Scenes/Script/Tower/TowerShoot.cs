@@ -1,21 +1,19 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class TowerShoot : MonoBehaviour
 {
     [SerializeField] private TowerData data;
     public TowerData Data { get => data; }
     [SerializeField] private ObjectPooler pooler;
-       public int currentDame;
-      public float currentSpeed;
+    public int currentDame;
+    public float currentSpeed;
     public float currentTimeEffect;
     public float currentDamageEffect;
     public SpriteRenderer spriteRenderer;
     public Sprite currentSprite;
     public float sizeBullet;
-    [SerializeField] private int currentlevel =1;
+    [SerializeField] private int currentlevel = 1;
     private int maxLevel = 2;
-
-
 
     private TowerTarget target;
 
@@ -32,11 +30,12 @@ public class TowerShoot : MonoBehaviour
         spriteRenderer.sprite = currentSprite;
     }
 
-    
-
     public virtual void Shoot()
     {
-        if(target.enemiesInRange.Count >0 && target.enemiesInRange[0].gameObject != null)
+        // Kiểm tra activeInHierarchy thay vì != null (vì pool dùng SetActive)
+        if (target.enemiesInRange.Count > 0
+            && target.enemiesInRange[0] != null
+            && target.enemiesInRange[0].gameObject.activeInHierarchy)
         {
             GameObject bullet = pooler.GetPoolObj();
             bullet.transform.position = transform.position;
@@ -46,11 +45,10 @@ public class TowerShoot : MonoBehaviour
             {
                 bulletScript.SetTarget(target.enemiesInRange[0].transform);
             }
-           
-         
         }
     }
-    public void CheckLevelData(int dataDamage, float dataSpeed, Sprite sprite, float dataDamageEffect,float dataTimeEffect)
+
+    public void CheckLevelData(int dataDamage, float dataSpeed, Sprite sprite, float dataDamageEffect, float dataTimeEffect)
     {
         currentDame = dataDamage;
         currentSpeed = dataSpeed;
@@ -58,20 +56,23 @@ public class TowerShoot : MonoBehaviour
         currentDamageEffect = dataDamageEffect;
         currentTimeEffect = dataTimeEffect;
         spriteRenderer.sprite = currentSprite;
-
     }
 
-    public bool TryUpgrade ()
+    public bool TryUpgrade()
     {
-        if (currentlevel == maxLevel || GameManager.Instance.Gold < data.UpgradeCost)
+        if (currentlevel >= maxLevel)
         {
             return false;
         }
+
+        // Dùng TrySpendGold thay vì SpendGold để đảm bảo đủ vàng
+        if (!GameManager.Instance.TrySpendGold(data.UpgradeCost))
+        {
+            return false;
+        }
+
         currentlevel++;
-        CheckLevelData(data.Damagelv2, data.Speedlv2 , data.Spritelv2, data.DamageEffectlv2 , data.TimeEffectlv2);
-        GameManager.Instance.SpendGold(data.UpgradeCost);
+        CheckLevelData(data.Damagelv2, data.Speedlv2, data.Spritelv2, data.DamageEffectlv2, data.TimeEffectlv2);
         return true;
     }
-
-  
 }
