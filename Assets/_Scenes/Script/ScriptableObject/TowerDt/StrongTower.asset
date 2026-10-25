@@ -21,7 +21,7 @@ MonoBehaviour:
   bulletSize: 3
   cost: 50
   upgradecost: 40
-  spritelv1: {fileID: 21300000, guid: c2469c8fc58059f40b6c1edd14b4c0ae, type: 3}
+  spritelv1: {fileID: -3476730113220672089, guid: 6bcd12141f04850459d15c07e0a6996e, type: 3}
   spritelv2: {fileID: 21300000, guid: f8e54d0087182a74cba660478eb83e90, type: 3}
   timeEffectlv1: 0
   timeEffectlv2: 0
