@@ -45,10 +45,7 @@ public class UIController : MonoBehaviour
     private TowerShoot selectedTower;
     private Coroutine warningCoroutine;
 
-    public bool IsGameplayBlocked =>
-        isGameEnded ||
-        isGamePause ||
-        IsPanelOpen(UpgradePanel);
+    public bool IsGameplayBlocked =>isGameEnded || isGamePause || IsPanelOpen(UpgradePanel);
 
     private void Awake()
     {
@@ -88,13 +85,12 @@ public class UIController : MonoBehaviour
 
     private void OnEnable()
     {
-        if (Instance != this) return;
-
+        
         EnemySpawn.OnWaveChanged += UpdateWaveText;
         EnemySpawn.OnAllWavesCompleted += HandleAllWavesCompleted;
-
         GameManager.CurrentHp += UpdateHp;
         GameManager.CurrentGold += UpdateGold;
+        TowerPlacementManager.CantBuildTower += CantBuild;
 
         RefreshUI();
     }
@@ -114,7 +110,7 @@ public class UIController : MonoBehaviour
     {
         EnemySpawn.OnWaveChanged -= UpdateWaveText;
         EnemySpawn.OnAllWavesCompleted -= HandleAllWavesCompleted;
-
+        TowerPlacementManager.CantBuildTower -= CantBuild;
         GameManager.CurrentHp -= UpdateHp;
         GameManager.CurrentGold -= UpdateGold;
     }
@@ -289,9 +285,7 @@ public class UIController : MonoBehaviour
     {
         if (GameManager.Instance == null) return;
 
-        float scale = IsGameplayBlocked
-            ? 0f
-            : GameManager.Instance.GameSpeed;
+        float scale = IsGameplayBlocked? 0f: GameManager.Instance.GameSpeed;
 
         GameManager.Instance.SetTimeScale(scale);
     }
@@ -301,10 +295,7 @@ public class UIController : MonoBehaviour
         return panel != null && panel.activeSelf;
     }
 
-    private static void SetPanelActive(
-        GameObject panel,
-        bool active
-    )
+    private static void SetPanelActive(GameObject panel,bool active)
     {
         if (panel != null)
         {
@@ -312,7 +303,7 @@ public class UIController : MonoBehaviour
         }
     }
 
-    // Script chọn tháp thật gọi hàm này.
+
     public void SelectTower(TowerShoot tower)
     {
         if (tower == null || IsGameplayBlocked)
@@ -338,11 +329,7 @@ public class UIController : MonoBehaviour
 
         bool upgraded = selectedTower.TryUpgrade();
 
-        ShowWarning(
-            upgraded
-                ? "Nâng cấp thành công."
-                : "Không đủ vàng hoặc tháp đã đạt cấp tối đa."
-        );
+        ShowWarning( upgraded ? "Nâng cấp thành công." : "Không đủ vàng hoặc tháp đã đạt cấp tối đa.");
 
         HidePanel(UpgradePanel);
     }
@@ -400,46 +387,29 @@ public class UIController : MonoBehaviour
         HighlightButtonSpeed(speed);
     }
 
-    private void UpdateButtonVisual(
-        Button button,
-        bool isSelected
-    )
+    private void UpdateButtonVisual(Button button, bool isSelected )
     {
         if (button == null) return;
 
         if (button.image != null)
         {
-            button.image.color = isSelected
-                ? selectedButton
-                : normalButton;
+            button.image.color = isSelected   ? selectedButton: normalButton;
         }
 
         TMP_Text tmp = button.GetComponentInChildren<TMP_Text>();
 
         if (tmp != null)
         {
-            tmp.color = isSelected
-                ? selectedText
-                : normalText;
+            tmp.color = isSelected ? selectedText: normalText;
         }
     }
 
     private void HighlightButtonSpeed(float speed)
     {
-        UpdateButtonVisual(
-            SpeedButton05,
-            Mathf.Approximately(speed, 0.5f)
-        );
+        UpdateButtonVisual( SpeedButton05, Mathf.Approximately(speed, 0.5f));
 
-        UpdateButtonVisual(
-            SpeedButton1,
-            Mathf.Approximately(speed, 1f)
-        );
-
-        UpdateButtonVisual(
-            SpeedButton2,
-            Mathf.Approximately(speed, 2f)
-        );
+        UpdateButtonVisual(SpeedButton1, Mathf.Approximately(speed, 1f)  );
+        UpdateButtonVisual(SpeedButton2, Mathf.Approximately(speed, 2f));
     }
 
     public void RestartLevel()
@@ -471,5 +441,9 @@ public class UIController : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
+    }
+    public void CantBuild(TowerData data)
+    {
+        ShowWarning("Không đủ vàng");
     }
 }

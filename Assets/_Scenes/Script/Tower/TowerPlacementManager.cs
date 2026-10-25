@@ -1,3 +1,4 @@
+﻿using System;
 using UnityEngine;
 
 public class TowerPlacementManager : MonoBehaviour
@@ -24,9 +25,11 @@ public class TowerPlacementManager : MonoBehaviour
     private GameObject preview;
     private PolygonCollider2D previewFootprint;
     private SpriteRenderer[] previewRenderers;
-
+    public static Action<TowerData> CantBuildTower;
     private ContactFilter2D buildableFilter;
     private ContactFilter2D blockedFilter;
+    public bool IsPlacing => preview != null && selectedTower != null;
+
 
     // Chỉ cần biết có ít nhất một collider chạm vào hay không.
     private readonly Collider2D[] overlapResults = new Collider2D[1];
@@ -231,6 +234,7 @@ public class TowerPlacementManager : MonoBehaviour
         {
             CancelPlacement();
             return;
+         
         }
 
         if (selectedTower.Prefab == null)
@@ -244,6 +248,7 @@ public class TowerPlacementManager : MonoBehaviour
         if (!GameManager.Instance.TrySpendGold(selectedTower.Cost))
         {
             CancelPlacement();
+            CantBuildTower?.Invoke(selectedTower);
             return;
         }
 

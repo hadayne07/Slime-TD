@@ -85,7 +85,6 @@ public class GameManager : MonoBehaviour
     {
         if (amount < 0)
         {
-            Debug.LogWarning("Số vàng cộng không được âm.");
             return;
         }
 
@@ -94,12 +93,10 @@ public class GameManager : MonoBehaviour
         CurrentGold?.Invoke(gold);
     }
 
-    // Trả về true khi thanh toán thành công.
     public bool TrySpendGold(int cost)
     {
         if (cost < 0)
         {
-            Debug.LogWarning("Giá mua không được âm.");
             return false;
         }
 
@@ -115,8 +112,6 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    // Giữ tạm để script cũ không lỗi biên dịch.
-    // Mua/nâng cấp nên kiểm tra kết quả TrySpendGold().
     public void SpendGold(int cost)
     {
         TrySpendGold(cost);

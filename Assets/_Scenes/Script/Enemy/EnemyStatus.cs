@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using UnityEngine;
 
@@ -25,8 +25,8 @@ public class EnemyStatus : MonoBehaviour
     {
         hp = data.Hp;
         currentSpeed = data.Speed;
-        isSlowed = false;       // Reset trạng thái slow khi pool reuse
-        isDead = false;         // Reset trạng thái chết
+        isSlowed = false;       
+        isDead = false;         
         burnCoroutine = null;
         burnExpiresAt = 0f;
         burnTickInterval = 1f;

@@ -1,4 +1,4 @@
-
+﻿
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -66,9 +66,9 @@ public class EnemySpawn : MonoBehaviour
 
             if (wavesCoolDown <= 0)
             {
-                if (currentWaveIndex + 1 >= waves.Length)
+                if (currentWaveIndex >= waves.Length)
                 {
-                    // Đã hết wave — gọi OnAllWavesCompleted trước khi tắt
+                   
                     enabled = false;
                     OnAllWavesCompleted?.Invoke();
                     return;
@@ -110,6 +110,7 @@ public class EnemySpawn : MonoBehaviour
 
     private void StartWaveGroup(Wavedata wave)
     {
+        if (wave == null) return;
         groupsStillSpawning = wave.groups.Length;
         foreach (EnemyGroup group in wave.groups)
         {
