@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1178042814624125402, guid: 003df21247a537d4db6e188064d5434e, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -168,6 +168,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TowerCard
   towerImage: {fileID: 7261306564619136564}
   cost: {fileID: 6992852406804340017}
+  placementManager: {fileID: 0}
+  towerData: {fileID: 0}
 --- !u!114 &-7069464937381067617
 MonoBehaviour:
   m_ObjectHideFlags: 0
