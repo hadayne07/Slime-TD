@@ -12,19 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0f21fa86a3f4ea44a31d26d11f74ce7, type: 3}
   m_Name: FireTower
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
-  speedBulletlv1: 4
-  speedBulletlv2: 5
-  damagelv1: 1
-  damagelv2: 6
+  speedBulletlv1: 10
+  speedBulletlv2: 12
+  damagelv1: 4
+  damagelv2: 7
   range: 3
-  timeShoot: 1
+  timeShoot: 0.8
   bulletSize: 2
-  cost: 100
-  upgradecost: 30
+  cost: 70
+  upgradecost: 80
   spritelv1: {fileID: -9213452189797336542, guid: 30792e65e0bdbac4e8e117d5a132e23e, type: 3}
   spritelv2: {fileID: -8075458869220859124, guid: 6cb154cec7f86d745978f48c18ded317, type: 3}
   timeEffectlv1: 2
   timeEffectlv2: 3
   damageEffectlv1: 1
   damageEffectlv2: 3
+  placementPreviewPrefab: {fileID: 4572029904750119722, guid: b64167b6a2982fa4395c0fcaae3ed9e5, type: 3}
   Prefab: {fileID: 4572029904750119722, guid: d2955f9fed3869342ad24ad8026b67d4, type: 3}

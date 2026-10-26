@@ -1,28 +1,22 @@
-﻿using System.Collections;
 using UnityEngine;
-
 
 public class BulletIce : Bullet
 {
-    private  float SlowPercent;
-    private  float SlowDurationSeconds;
-
-    
-
-    private void Update()
-    {
-        FollowTarget();
-        LookTarget();
-    }
-
     public override void OnTriggerEnter2D(Collider2D collision)
     {
-        EnemyStatus targetEnemy = collision.GetComponentInParent<EnemyStatus>();
-        if (targetEnemy == null || !targetEnemy.CompareTag("Enemy"))
+        if (!collision.CompareTag("Enemy"))
             return;
 
+        EnemyStatus targetEnemy = collision.GetComponentInParent<EnemyStatus>();
+        if (targetEnemy == null)
+            return;
+
+        // Áp dụng slow trước, rồi gây sát thương cơ bản qua base
         targetEnemy.ApplySlowEffect(towerShoot.currentDamageEffect, towerShoot.currentTimeEffect);
-        base.OnTriggerEnter2D(collision);
+
+        // Gây sát thương cơ bản và tắt bullet
+        enemy = targetEnemy;
+        enemy.TakeDame(towerShoot.currentDame);
+        gameObject.SetActive(false);
     }
 }
-

@@ -1,5 +1,105 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5585183313945633831
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 808951155443186307}
+  - component: {fileID: 9206285374563405537}
+  m_Layer: 9
+  m_Name: PlaceFootPrint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &808951155443186307
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5585183313945633831}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9212696519057515690}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!60 &9206285374563405537
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5585183313945633831}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 1.0280467, y: 0.61341846}
+      - {x: 1.2040133, y: 1.1938058}
+      - {x: 1.2498688, y: 1.7073032}
+      - {x: 1.0571647, y: 2.0208454}
+      - {x: 0.78373915, y: 1.8155713}
+      - {x: 0.6322192, y: 1.5509224}
+      - {x: 0.039841987, y: 2.0736012}
+      - {x: -0.66862446, y: 1.7871311}
+      - {x: -0.7151321, y: 1.4947765}
+      - {x: -0.79935384, y: 1.3475378}
+      - {x: -0.9936831, y: 1.1136988}
+      - {x: -0.906543, y: 0.7896809}
+      - {x: -0.590397, y: 0.8190506}
+      - {x: -0.8995426, y: 0.77129185}
+      - {x: -0.9075262, y: 0.38331553}
+      - {x: -0.6413894, y: 0.05317408}
+      - {x: -0.29644054, y: 0.011105537}
+      - {x: -0.036479473, y: 0.026555717}
+      - {x: 0.28629005, y: 0.017941594}
+      - {x: 0.6284424, y: 0.02605483}
+      - {x: 0.7270885, y: 0.24871805}
+  m_UseDelaunayMesh: 1
 --- !u!1 &7014931147750514249
 GameObject:
   m_ObjectHideFlags: 0
@@ -84,6 +184,7 @@ Transform:
   m_Children:
   - {fileID: 2609572339435516709}
   - {fileID: 878092769980589514}
+  - {fileID: 808951155443186307}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4465363083891181466
@@ -251,6 +352,8 @@ MonoBehaviour:
   pooler: {fileID: 4792824369580497425}
   currentDame: 0
   currentSpeed: 0
+  currentTimeEffect: 0
+  currentDamageEffect: 0
   spriteRenderer: {fileID: 0}
   currentSprite: {fileID: 0}
   sizeBullet: 0

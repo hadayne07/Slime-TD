@@ -12,19 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0f21fa86a3f4ea44a31d26d11f74ce7, type: 3}
   m_Name: BurstTower
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
-  speedBulletlv1: 3
-  speedBulletlv2: 7
-  damagelv1: 2
-  damagelv2: 4
+  speedBulletlv1: 12
+  speedBulletlv2: 14
+  damagelv1: 4
+  damagelv2: 7
   range: 3
-  timeShoot: 0.3
+  timeShoot: 0.35
   bulletSize: 0.5
-  cost: 30
-  upgradecost: 20
+  cost: 50
+  upgradecost: 60
   spritelv1: {fileID: 1178042814624125402, guid: 003df21247a537d4db6e188064d5434e, type: 3}
   spritelv2: {fileID: 21300000, guid: 0ec819e9a0ac6ae42921046a438c26c0, type: 3}
   timeEffectlv1: 0
   timeEffectlv2: 0
   damageEffectlv1: 0
   damageEffectlv2: 0
+  placementPreviewPrefab: {fileID: 3692499505302823458, guid: e6393d18b1d24414dbc42a4f9224e0a8, type: 3}
   Prefab: {fileID: 3692499505302823458, guid: 1bca48d6d35ddb14e9b406c66e5b88ca, type: 3}
