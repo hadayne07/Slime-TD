@@ -19,11 +19,14 @@ public class EnemyStatus : MonoBehaviour
 
     public float currentSpeed;
     private bool isSlowed = false;
+    private bool isDead = false;
 
     private void OnEnable()
     {
         hp = data.Hp;
         currentSpeed = data.Speed;
+        isSlowed = false;       
+        isDead = false;         
         burnCoroutine = null;
         burnExpiresAt = 0f;
         burnTickInterval = 1f;
@@ -46,25 +49,32 @@ public class EnemyStatus : MonoBehaviour
         burnDamage = 0;
     }
 
-    private void Update()
+    public void TakeDame(float dame)
     {
+        if (isDead) return;
+
+        hp -= dame;
+        UpdateHealthBar();
+
         if (hp <= 0)
         {
-            goldplus?.Invoke(data);
-            enemyDie?.Invoke(this);
-            gameObject.SetActive(false);
+            Die();
         }
     }
 
-    public void TakeDame(float dame)
+    private void Die()
     {
-        hp -= dame;
-        UpdateHealthBar();
+        if (isDead) return;
+        isDead = true;
+
+        goldplus?.Invoke(data);
+        enemyDie?.Invoke(this);
+        gameObject.SetActive(false);
     }
 
     protected void UpdateHealthBar()
     {
-        float healthBarPercent = hp / data.Hp;
+        float healthBarPercent = Mathf.Max(0f, hp / data.Hp);
         Vector3 scale = healthBarOriginalScale;
         scale.x = healthBarOriginalScale.x * healthBarPercent;
         healthbar.localScale = scale;
@@ -72,18 +82,17 @@ public class EnemyStatus : MonoBehaviour
 
     public void HasSlowed(float slow)
     {
-        currentSpeed -= slow;
+        currentSpeed = Mathf.Max(0f, currentSpeed - slow);
     }
 
     public void SetSpeed(float slow)
     {
-       currentSpeed+= slow;
+        currentSpeed += slow;
     }
-
 
     public void ApplyBurn(float damage, float duration, float tickInterval = 1f)
     {
-        if (hp <= 0 || damage <= 0 || duration <= 0 || !isActiveAndEnabled)
+        if (isDead || hp <= 0 || damage <= 0 || duration <= 0 || !isActiveAndEnabled)
             return;
 
         burnDamage = damage;
@@ -103,7 +112,6 @@ public class EnemyStatus : MonoBehaviour
             if (hp <= 0 || !isActiveAndEnabled)
                 break;
 
-   
             if (Time.time <= burnExpiresAt)
                 TakeDame(burnDamage);
         }
@@ -114,7 +122,7 @@ public class EnemyStatus : MonoBehaviour
 
     public void ApplySlowEffect(float slowAmount, float duration)
     {
-        if (!isSlowed)
+        if (!isSlowed && !isDead)
             StartCoroutine(SlowRoutine(slowAmount, duration));
     }
 
@@ -122,7 +130,6 @@ public class EnemyStatus : MonoBehaviour
     {
         isSlowed = true;
         HasSlowed(slowAmount);
-
 
         float timer = 0f;
         while (timer < duration && hp > 0)
@@ -134,7 +141,6 @@ public class EnemyStatus : MonoBehaviour
         if (hp > 0)
         {
             SetSpeed(slowAmount);
-
         }
 
         isSlowed = false;

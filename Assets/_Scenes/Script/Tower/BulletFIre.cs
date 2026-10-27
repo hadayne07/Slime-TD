@@ -1,17 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class BulletFire : Bullet
 {
-   
-
-    private  float BurnTickIntervalSeconds = 1f;
-
-    
-    private void Update()
-    {
-        FollowTarget();
-        LookTarget();
-    }
+    private float BurnTickIntervalSeconds = 1f;
 
     public override void OnTriggerEnter2D(Collider2D collision)
     {
@@ -23,11 +14,9 @@ public class BulletFire : Bullet
         {
             int hitDamage = towerShoot.currentDame;
 
-           
             targetEnemy.TakeDame(hitDamage);
             targetEnemy.ApplyBurn(towerShoot.currentDamageEffect, towerShoot.currentTimeEffect, BurnTickIntervalSeconds);
         }
-
 
         gameObject.SetActive(false);
     }
