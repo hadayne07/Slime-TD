@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TowerShoot : MonoBehaviour
 {
@@ -38,13 +38,21 @@ public class TowerShoot : MonoBehaviour
             && target.enemiesInRange[0].gameObject.activeInHierarchy)
         {
             GameObject bullet = pooler.GetPoolObj();
-            bullet.transform.position = transform.position;
-            bullet.SetActive(true);
+            if (bullet == null)
+                return;
+
             Bullet bulletScript = bullet.GetComponent<Bullet>();
-            if (bulletScript != null)
-            {
-                bulletScript.SetTarget(target.enemiesInRange[0].transform);
-            }
+            if (bulletScript == null)
+                return;
+
+            bullet.transform.position = transform.position;
+            bulletScript.towerShoot = this;
+
+            bulletScript.SetTarget(
+                target.enemiesInRange[0].transform
+            );
+
+            bullet.SetActive(true);
         }
     }
 

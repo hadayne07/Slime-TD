@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c94fd6ab116b9de43a48d551d95e43c8, type: 3}
   m_Name: BlueData
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  speed: 4.7
-  hp: 12
-  damage: 5
-  goldFall: 4
+  speed: 5
+  hp: 16
+  damage: 4
+  goldFall: 2
