@@ -43,38 +43,42 @@
     <UnityVersion>6000.3.25f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Analyzer Include="C:\Program Files\Microsoft Visual Studio\18\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
+    <Analyzer Include="C:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.3.25f1\Editor\Data\Tools\BuildPipeline\Unity.SourceGenerators\Unity.SourceGenerators.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.3.25f1\Editor\Data\Tools\BuildPipeline\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.3.25f1\Editor\Data\Tools\BuildPipeline\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
     <Analyzer Include="C:\Users\Admin\Slime-TD\Library\PackageCache\com.unity.ai.inference@9a123aee5df7\Runtime\Core\SourceGenerator\SourceGenerators.dll" />
+    <Analyzer Include="C:\Users\Admin\Slime-TD\Library\PackageCache\com.unity.pipeline@363b8bb9e91d\Runtime\Analyzers\IlInterpreterAnalyzer.dll" />
     <Analyzer Include="C:\Users\Admin\Slime-TD\Library\PackageCache\com.unity.dt.app-ui@8ac7e730dd5d\Runtime\SourceGenerators\netstandard2.0\EnumToLowerCase.dll" />
     <Analyzer Include="C:\Users\Admin\Slime-TD\Library\PackageCache\com.unity.dt.app-ui@8ac7e730dd5d\Runtime\MVVM\SourceGenerators\netstandard2.0\MVVMSourceGenerators.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\_Scenes\Script\ScriptableObject\EnemyDt\Enemy Data.cs" />
     <Compile Include="Assets\_Scenes\Script\Tower\Bullet.cs" />
-    <Compile Include="Assets\_Scenes\Script\ScriptableObject\Waves\Wave data.cs" />
+    <Compile Include="Assets\_Scenes\Script\Tower\TowerPlacementManager.cs" />
     <Compile Include="Assets\_Scenes\Script\Enemy\EnemyStatus.cs" />
     <Compile Include="Assets\_Scenes\Script\Tower\BulletIce.cs" />
     <Compile Include="Assets\_Scenes\Script\Tower\TowerTarget.cs" />
     <Compile Include="Assets\_Scenes\Script\UIController\UIController.cs" />
     <Compile Include="Assets\_Scenes\Script\Tower\TowerCard.cs" />
     <Compile Include="Assets\_Scenes\Script\Player\GameManager.cs" />
+    <Compile Include="Assets\_Scenes\Script\Tower\TowerDragItem.cs" />
+    <Compile Include="Assets\_Scenes\Script\Enemy\EnemyType.cs" />
     <Compile Include="Assets\_Scenes\Script\Tower\TowerCtrl.cs" />
     <Compile Include="Assets\_Scenes\Script\Enemy\EnemySpawn.cs" />
     <Compile Include="Assets\_Scenes\Script\Pool\ObjectPooler.cs" />
     <Compile Include="Assets\_Scenes\Script\Enemy\EnemyMove.cs" />
     <Compile Include="Assets\_Scenes\Script\Enemy\EnemyCtrl.cs" />
     <Compile Include="Assets\_Scenes\Script\Tower\TowerShoot.cs" />
-    <Compile Include="Assets\_Scenes\Script\EnemyType.cs" />
     <Compile Include="Assets\NewMonoBehaviour.cs" />
     <Compile Include="Assets\_Scenes\Script\ScriptableObject\TowerDt\TowerData.cs" />
+    <Compile Include="Assets\_Scenes\Script\Enemy\Enemy Group.cs" />
+    <Compile Include="Assets\_Scenes\Script\Tower\TowerClickSelector.cs" />
     <Compile Include="Assets\_Scenes\Script\Path\Path.cs" />
     <Compile Include="Assets\_Scenes\Script\Tower\BulletFIre.cs" />
     <Compile Include="Assets\_Scenes\Script\ScriptableObject\LevelDes\LevelDes.cs" />
     <Compile Include="Assets\_Scenes\MainMenu.cs" />
-    <Compile Include="Assets\_Scenes\Script\Player\Platform.cs" />
+    <Compile Include="Assets\_Scenes\Script\Waves\Wave data.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
@@ -646,16 +650,20 @@
       <HintPath>Library\PackageCache\com.unity.ext.nunit@d8c07649098d\net40\unity-custom\nunit.framework.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>Library\PackageCache\com.unity.pipeline@24975d51528a\Runtime\Plugins\CodeAnalysis\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>Library\PackageCache\com.unity.pipeline@24975d51528a\Runtime\Plugins\CodeAnalysis\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="UnityPipeline.Microsoft.CodeAnalysis.CSharp">
+      <HintPath>Library\PackageCache\com.unity.pipeline@363b8bb9e91d\Runtime\Plugins\CodeAnalysis\UnityPipeline.Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
       <HintPath>Library\PackageCache\com.unity.visualscripting@4edfcc09512f\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityPipeline.System.Runtime.CompilerServices.Unsafe">
+      <HintPath>Library\PackageCache\com.unity.pipeline@363b8bb9e91d\Runtime\Plugins\CodeAnalysis\UnityPipeline.System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityPipeline.System.Collections.Immutable">
+      <HintPath>Library\PackageCache\com.unity.pipeline@363b8bb9e91d\Runtime\Plugins\CodeAnalysis\UnityPipeline.System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
@@ -666,16 +674,32 @@
       <HintPath>Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff\Mono.Cecil.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>Library\PackageCache\com.unity.pipeline@24975d51528a\Runtime\Plugins\CodeAnalysis\System.Reflection.Metadata.dll</HintPath>
+    <Reference Include="UnityPipeline.System.Reflection.Metadata">
+      <HintPath>Library\PackageCache\com.unity.pipeline@363b8bb9e91d\Runtime\Plugins\CodeAnalysis\UnityPipeline.System.Reflection.Metadata.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>Library\PackageCache\com.unity.pipeline@24975d51528a\Runtime\Plugins\CodeAnalysis\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="UnityPipeline.Microsoft.CodeAnalysis">
+      <HintPath>Library\PackageCache\com.unity.pipeline@363b8bb9e91d\Runtime\Plugins\CodeAnalysis\UnityPipeline.Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>Library\PackageCache\com.unity.pipeline@24975d51528a\Runtime\Plugins\CodeAnalysis\Microsoft.CodeAnalysis.dll</HintPath>
+    <Reference Include="UnityEditor.iOS.Extensions.Xcode">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\6000.3.25f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEditor.iOS.Extensions.Common">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\6000.3.25f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEditor.Apple.Extensions.Common">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\6000.3.25f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.Apple.Extensions.Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Android.Types">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\6000.3.25f1\Editor\Data\PlaybackEngines\AndroidPlayer\Unity.Android.Types.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Android.Gradle">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\6000.3.25f1\Editor\Data\PlaybackEngines\AndroidPlayer\Unity.Android.Gradle.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="netstandard">
@@ -1214,6 +1238,10 @@
       <HintPath>Library\ScriptAssemblies\Unity.2D.Common.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Unity.Pipeline.IlInterpreter">
+      <HintPath>Library\ScriptAssemblies\Unity.Pipeline.IlInterpreter.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.AI.Assistant.Integrations.Profiler.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.AI.Assistant.Integrations.Profiler.Editor.dll</HintPath>
       <Private>False</Private>
@@ -1428,6 +1456,10 @@
     </Reference>
     <Reference Include="Unity.Mathematics.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.Mathematics.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Pipeline.Attributes">
+      <HintPath>Library\ScriptAssemblies\Unity.Pipeline.Attributes.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.2D.Psdimporter.Editor">
