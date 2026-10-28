@@ -14,4 +14,5 @@ public class EnemyGroup
 
     [Min(0.01f)]
     public float spawnInterval = 1f;
+
 }

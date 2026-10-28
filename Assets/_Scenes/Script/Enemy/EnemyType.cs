@@ -4,5 +4,6 @@ public enum EnemyType
 {
     Green,
     Blue,
-    Red
+    Red,
+    Boss
 }

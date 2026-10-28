@@ -14,10 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Wavedata
   groups:
   - enemyType: 0
-    count: 0
-    startDelay: 0
-    spawnInterval: 0
-  - enemyType: 0
     count: 16
     startDelay: 0
     spawnInterval: 0.45

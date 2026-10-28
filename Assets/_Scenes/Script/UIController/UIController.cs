@@ -28,10 +28,11 @@ public class UIController : MonoBehaviour
     [Header("Thông báo")]
     [SerializeField] private TMP_Text warningText;
 
-    [Header("Nút tốc độ")]
+    [Header("Nút tốc độ và bắt đầu")]
     [SerializeField] private Button SpeedButton05;
     [SerializeField] private Button SpeedButton1;
     [SerializeField] private Button SpeedButton2;
+    [SerializeField] private Button StartButton;
 
     [Header("Màu nút")]
     [SerializeField] private Color normalButton = Color.white;
@@ -407,7 +408,6 @@ public class UIController : MonoBehaviour
     private void HighlightButtonSpeed(float speed)
     {
         UpdateButtonVisual( SpeedButton05, Mathf.Approximately(speed, 0.5f));
-
         UpdateButtonVisual(SpeedButton1, Mathf.Approximately(speed, 1f)  );
         UpdateButtonVisual(SpeedButton2, Mathf.Approximately(speed, 2f));
     }
@@ -445,5 +445,10 @@ public class UIController : MonoBehaviour
     public void CantBuild(TowerData data)
     {
         ShowWarning("Không đủ vàng");
+    }
+    public void StartWave()
+    {
+        enemySpawn.TriggerStartWave();
+        UpdateButtonVisual(StartButton, enemySpawn.hasStarted);
     }
 }
