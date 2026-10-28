@@ -10,7 +10,7 @@ public class EnemySpawn : MonoBehaviour
 
     [Header("Wave")]
     [SerializeField] private Wavedata[] waves;
-    [SerializeField] protected int currentWaveIndex;
+    [SerializeField] protected int currentWaveIndex =0;
 
     public int CurrentWaveIndex => currentWaveIndex;
     private Wavedata CurrentWave => waves[currentWaveIndex];
@@ -19,6 +19,7 @@ public class EnemySpawn : MonoBehaviour
     [SerializeField] private ObjectPooler Greenpool;
     [SerializeField] private ObjectPooler Bluepool;
     [SerializeField] private ObjectPooler Redpool;
+    [SerializeField] private ObjectPooler Bosspool;
 
     [Header("Theo dõi")]
     [SerializeField] private int enemiesRemoved;
@@ -29,7 +30,7 @@ public class EnemySpawn : MonoBehaviour
 
     public int EnemisRemoved => enemiesRemoved;
 
-    private bool hasStarted;
+    public bool hasStarted;
     private bool allWavesCompleted;
     private bool hasSpawnError;
 
@@ -41,7 +42,8 @@ public class EnemySpawn : MonoBehaviour
         {
             { EnemyType.Green, Greenpool },
             { EnemyType.Blue, Bluepool },
-            { EnemyType.Red, Redpool }
+            { EnemyType.Red, Redpool },
+            {EnemyType.Boss , Bosspool }
         };
     }
 
@@ -65,18 +67,35 @@ public class EnemySpawn : MonoBehaviour
             return;
         }
 
-        hasStarted = true;
-        BeginCurrentWave();
     }
 
     private void Update()
     {
         if (!hasStarted || allWavesCompleted || hasSpawnError)
             return;
-
-        CheckWave();
+          CheckWave(); 
     }
+    public void TriggerStartWave()
+    {
 
+        if (!hasStarted)
+        {
+            hasStarted = true;
+            BeginCurrentWave();
+            return;
+        }
+        if (hasStarted && isBetweenWaves)
+        {
+            currentWaveIndex++;
+            if (currentWaveIndex >= waves.Length)
+            {
+                CompleteAllWaves();
+                return;
+            }
+
+            BeginCurrentWave();
+        }
+    }
     private bool ValidateWaves()
     {
         if (waves == null || waves.Length == 0)
@@ -153,20 +172,16 @@ public class EnemySpawn : MonoBehaviour
 
             if (wavesCoolDown > 0f)
                 return;
-
-            // Kiểm tra trước khi tăng chỉ số Wave.
-            if (currentWaveIndex + 1 >= waves.Length)
+            currentWaveIndex++;
+            if (currentWaveIndex >= waves.Length)
             {
                 CompleteAllWaves();
                 return;
             }
-
-            currentWaveIndex++;
             BeginCurrentWave();
             return;
         }
 
-        // Chưa spawn hết hoặc còn quái trên map.
         if (groupsStillSpawning > 0 || enemiesRemoved < spawncouter)
             return;
 
@@ -179,7 +194,6 @@ public class EnemySpawn : MonoBehaviour
         wavesCoolDown = Mathf.Max(0f, CurrentWave.TimeNextWave);
         isBetweenWaves = true;
     }
-
     private void CompleteAllWaves()
     {
         if (allWavesCompleted)

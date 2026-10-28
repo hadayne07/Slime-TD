@@ -15,7 +15,7 @@ MonoBehaviour:
   speedBulletlv1: 16
   speedBulletlv2: 18
   damagelv1: 3
-  damagelv2: 5
+  damagelv2: 6
   range: 2.6
   timeShoot: 0.22
   bulletSize: 1

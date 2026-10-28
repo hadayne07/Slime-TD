@@ -11,11 +11,7 @@ public class BulletFire : Bullet
 
         if (targetEnemy.IsAlive)
         {
-            targetEnemy.ApplyBurn(
-                towerShoot.currentDamageEffect,
-                towerShoot.currentTimeEffect,
-                1f
-            );
+            targetEnemy.ApplyBurn(towerShoot.currentDamageEffect,towerShoot.currentTimeEffect,1f);
         }
 
         gameObject.SetActive(false);

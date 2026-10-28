@@ -24,8 +24,7 @@ public class EnemyStatus : MonoBehaviour
 
     private bool isDead;
 
-    public bool IsAlive =>
-        !isDead && hp > 0f && isActiveAndEnabled;
+    public bool IsAlive =>!isDead && hp > 0f && isActiveAndEnabled;
 
     // Slow theo phần trăm.
     private const float MaxSlowPercent = 0.4f;

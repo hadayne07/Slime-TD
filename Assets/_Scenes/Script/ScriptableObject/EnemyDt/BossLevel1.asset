@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c94fd6ab116b9de43a48d551d95e43c8, type: 3}
   m_Name: BossLevel1
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  speed: 0
-  hp: 0
-  damage: 0
+  speed: 3
+  hp: 500
+  damage: 100
   goldFall: 0
