@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using UnityEngine;
 
 public class EnemyStatus : MonoBehaviour
@@ -32,10 +31,16 @@ public class EnemyStatus : MonoBehaviour
     private float slowExpiresAt;
 
     // Burn.
-    private Coroutine burnCoroutine;
-    private float burnExpiresAt;
+    private bool isBurning;
+
+    private double burnExpiresAt;
+    private double nextBurnTickAt;
+
     private float burnTickInterval = 1f;
     private float burnDamage;
+
+    // Sai số nhỏ khi so sánh mốc thời gian.
+    private const double BurnTimeEpsilon = 0.000001;
 
     private void Awake()
     {
@@ -66,32 +71,22 @@ public class EnemyStatus : MonoBehaviour
         activeSlowPercent = 0f;
         slowExpiresAt = 0f;
 
-        burnCoroutine = null;
-        burnExpiresAt = 0f;
-        burnTickInterval = 1f;
-        burnDamage = 0f;
+        ResetBurn();
 
         UpdateHealthBar();
     }
 
     private void Update()
     {
-        if (!IsAlive)
+        if (!IsAlive || Time.deltaTime <= 0f)
             return;
 
         UpdateSlow();
+        UpdateBurn();
     }
-
     private void OnDisable()
     {
-        if (burnCoroutine != null)
-        {
-            StopCoroutine(burnCoroutine);
-        }
-
-        burnCoroutine = null;
-        burnExpiresAt = 0f;
-        burnDamage = 0f;
+        ResetBurn();
 
         activeSlowPercent = 0f;
         slowExpiresAt = 0f;
@@ -107,7 +102,7 @@ public class EnemyStatus : MonoBehaviour
     public void PrepareForWave(int waveNumber)
     {
         waveHpMultiplier =
-            1f + Mathf.Max(0, waveNumber - 10) * 0.1f;
+            1f + Mathf.Max(0, waveNumber - 10) * 0.03f;
     }
 
     public void TakeDame(float dame)
@@ -203,39 +198,82 @@ public class EnemyStatus : MonoBehaviour
     // ================= BURN =================
 
     public void ApplyBurn(
-        float damage,
-        float duration,
-        float tickInterval = 1f)
+     float damage,
+     float duration,
+     float tickInterval = 1f)
     {
         if (!IsAlive || damage <= 0f || duration <= 0f)
             return;
 
-        burnDamage = damage;
-        burnTickInterval = Mathf.Max(0.1f, tickInterval);
-        burnExpiresAt = Time.time + duration;
+        // Xử lý các tick đã đến hạn trước khi nhận burn mới.
+        UpdateBurn();
 
-        if (burnCoroutine == null)
+        // Tick burn vừa xử lý có thể đã giết quái.
+        if (!IsAlive)
+            return;
+
+        double now = Time.timeAsDouble;
+
+        if (!isBurning)
         {
-            burnCoroutine = StartCoroutine(BurnRoutine());
+            isBurning = true;
+
+            burnDamage = damage;
+            burnTickInterval = Mathf.Max(0.1f, tickInterval);
+
+            nextBurnTickAt = now + burnTickInterval;
+            burnExpiresAt = now + duration;
+        }
+        else
+        {
+            // Đòn yếu hơn không ghi đè damage mạnh hơn.
+            burnDamage = Mathf.Max(burnDamage, damage);
+
+            // Gia hạn mà không lùi lịch tick đang chạy.
+            burnExpiresAt = Math.Max(
+                burnExpiresAt,
+                now + duration
+            );
         }
     }
 
-    private IEnumerator BurnRoutine()
+    private void UpdateBurn()
     {
-        while (IsAlive && Time.time < burnExpiresAt)
+        if (!isBurning || !IsAlive)
+            return;
+
+        double now = Time.timeAsDouble;
+
+        // Xử lý tất cả tick đã đến hạn, kể cả tick cuối
+        // nếu frame hiện tại chạy muộn hơn thời điểm hết burn.
+        while (
+            isBurning &&
+            IsAlive &&
+            nextBurnTickAt <= now + BurnTimeEpsilon &&
+            nextBurnTickAt <= burnExpiresAt + BurnTimeEpsilon)
         {
-            yield return new WaitForSeconds(burnTickInterval);
+            float damageThisTick = burnDamage;
 
-            if (!IsAlive)
-                break;
+            // Tăng lịch trước khi gây damage.
+            nextBurnTickAt += burnTickInterval;
 
-            if (Time.time <= burnExpiresAt)
-            {
-                TakeDame(burnDamage);
-            }
+            TakeDame(damageThisTick);
         }
 
-        burnCoroutine = null;
+        if (isBurning && now >= burnExpiresAt)
+        {
+            ResetBurn();
+        }
+    }
+
+    private void ResetBurn()
+    {
+        isBurning = false;
+
         burnDamage = 0f;
+        burnTickInterval = 1f;
+
+        nextBurnTickAt = 0d;
+        burnExpiresAt = 0d;
     }
 }

@@ -18,7 +18,6 @@ MonoBehaviour:
     startDelay: 0
     spawnInterval: 0.8
   - enemyType: 1
-    count: 3
+    count: 2
     startDelay: 3
     spawnInterval: 0.9
-  timeNextWave: 4

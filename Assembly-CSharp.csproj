@@ -68,13 +68,14 @@
     <Compile Include="Assets\_Scenes\Script\Pool\ObjectPooler.cs" />
     <Compile Include="Assets\_Scenes\Script\Enemy\EnemyMove.cs" />
     <Compile Include="Assets\_Scenes\Script\Enemy\EnemyCtrl.cs" />
+    <Compile Include="Assets\_Scenes\Script\MatchRecorder.cs" />
     <Compile Include="Assets\_Scenes\Script\ScriptableObject\Tower\TowerCtrl.cs" />
     <Compile Include="Assets\NewMonoBehaviour.cs" />
     <Compile Include="Assets\_Scenes\Script\ScriptableObject\TowerDt\TowerData.cs" />
     <Compile Include="Assets\_Scenes\Script\Enemy\Enemy Group.cs" />
-    <Compile Include="Assets\_Scenes\Script\Path\Path.cs" />
     <Compile Include="Assets\_Scenes\MainMenu.cs" />
     <Compile Include="Assets\_Scenes\Script\Waves\Wave data.cs" />
+    <Compile Include="Assets\_Scenes\Script\Player\Path\Path.cs" />
     <Compile Include="Assets\_Scenes\Script\ScriptableObject\Tower\TowerClickSelector.cs" />
     <Compile Include="Assets\_Scenes\Script\ScriptableObject\Tower\TowerTarget.cs" />
     <Compile Include="Assets\_Scenes\Script\ScriptableObject\Tower\TowerCard.cs" />

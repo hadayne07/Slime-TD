@@ -13,6 +13,7 @@ public class UIController : MonoBehaviour
     [SerializeField] private TMP_Text hpText;
     [SerializeField] private TMP_Text goldText;
     [SerializeField] private EnemySpawn enemySpawn;
+    [SerializeField] private MatchRecorder matchRecorder;
 
     [Header("Panel")]
     [SerializeField] private GameObject towerPanel;
@@ -414,6 +415,10 @@ public class UIController : MonoBehaviour
 
     public void RestartLevel()
     {
+        if (matchRecorder != null)
+        {
+            matchRecorder.EndBeforeLeaving();
+        }
         if (placementManager != null)
         {
             placementManager.CancelPlacement();
@@ -428,6 +433,10 @@ public class UIController : MonoBehaviour
 
     public void GoMainMenu()
     {
+        if (matchRecorder != null)
+        {
+            matchRecorder.EndBeforeLeaving();
+        }
         if (placementManager != null)
         {
             placementManager.CancelPlacement();
@@ -448,7 +457,29 @@ public class UIController : MonoBehaviour
     }
     public void StartWave()
     {
+        if (IsGameplayBlocked || enemySpawn == null ||!enemySpawn.CanStartNextWave)
+        {
+            return;
+        }
+
         enemySpawn.TriggerStartWave();
-        UpdateButtonVisual(StartButton, enemySpawn.hasStarted);
+        RefreshStartButton();
+    }
+    private void Update()
+    {
+        RefreshStartButton();
+    }
+
+    private void RefreshStartButton()
+    {
+        if (StartButton == null)
+            return;
+
+        bool canStart =
+            !IsGameplayBlocked &&
+            enemySpawn != null &&
+            enemySpawn.CanStartNextWave;
+
+        StartButton.interactable = canStart;
     }
 }
