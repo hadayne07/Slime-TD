@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,10 +9,9 @@ public class EnemySpawn : MonoBehaviour
 
     [Header("Wave")]
     [SerializeField] private Wavedata[] waves;
-    [SerializeField] protected int currentWaveIndex =0;
+    [SerializeField] private int currentWaveIndex;
 
     public int CurrentWaveIndex => currentWaveIndex;
-    private Wavedata CurrentWave => waves[currentWaveIndex];
 
     [Header("Pool")]
     [SerializeField] private ObjectPooler Greenpool;
@@ -25,16 +23,41 @@ public class EnemySpawn : MonoBehaviour
     [SerializeField] private int enemiesRemoved;
     [SerializeField] private int spawncouter;
     [SerializeField] private int groupsStillSpawning;
-    [SerializeField] private float wavesCoolDown;
-    [SerializeField] private bool isBetweenWaves;
 
     public int EnemisRemoved => enemiesRemoved;
 
-    public bool hasStarted;
+    // Giữ tên để tương thích với UI cũ.
+    public bool hasStarted { get; private set; }
+
+    private bool initialized;
+    private bool waveRunning;
     private bool allWavesCompleted;
     private bool hasSpawnError;
 
     private Dictionary<EnemyType, ObjectPooler> poolDictionary;
+
+    // Tiến độ riêng của từng nhóm trong Wave.
+    private class GroupProgress
+    {
+        public EnemyType enemyType;
+        public int remaining;
+        public float interval;
+        public float timeUntilSpawn;
+    }
+
+    private readonly List<GroupProgress> activeGroups =
+        new List<GroupProgress>();
+    public bool IsWaveRunning => waveRunning;
+    public bool CanStartNextWave => initialized &&
+        isActiveAndEnabled &&
+        !waveRunning &&
+        !allWavesCompleted &&
+        !hasSpawnError &&
+        GameManager.Instance != null &&
+        GameManager.Instance.Hp > 0 &&
+        Time.timeScale > 0f &&
+        (UIController.Instance == null ||
+         !UIController.Instance.IsGameplayBlocked);
 
     private void Awake()
     {
@@ -43,17 +66,16 @@ public class EnemySpawn : MonoBehaviour
             { EnemyType.Green, Greenpool },
             { EnemyType.Blue, Bluepool },
             { EnemyType.Red, Redpool },
-            {EnemyType.Boss , Bosspool }
+            { EnemyType.Boss, Bosspool }
         };
-    }
 
-    private void OnEnable()
-    {
+        // Giữ đăng ký trong suốt vòng đời object:
+        // spawner tạm tắt vẫn đếm được quái đã chết/tới đích.
         EnemyMove.OnEnemyReachEnd += HandleEnemyReachEnd;
         EnemyStatus.enemyDie += HandleEnemyDie;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         EnemyMove.OnEnemyReachEnd -= HandleEnemyReachEnd;
         EnemyStatus.enemyDie -= HandleEnemyDie;
@@ -61,91 +83,64 @@ public class EnemySpawn : MonoBehaviour
 
     private void Start()
     {
-        if (!ValidateWaves())
+        if (waves == null ||
+            waves.Length == 0 ||
+            currentWaveIndex < 0 ||
+            currentWaveIndex >= waves.Length)
         {
-            enabled = false;
+            SetSpawnError("Danh sách Wave hoặc chỉ số Wave không hợp lệ.");
             return;
         }
 
+        initialized = true;
+
+        // Chỉ hiển thị, chưa sinh quái.
+        OnWaveChanged?.Invoke(currentWaveIndex);
     }
 
-    private void Update()
-    {
-        if (!hasStarted || allWavesCompleted || hasSpawnError)
-            return;
-          CheckWave(); 
-    }
     public void TriggerStartWave()
     {
-
-        if (!hasStarted)
-        {
-            hasStarted = true;
-            BeginCurrentWave();
+        if (!CanStartNextWave)
             return;
-        }
-        if (hasStarted && isBetweenWaves)
-        {
-            currentWaveIndex++;
-            if (currentWaveIndex >= waves.Length)
-            {
-                CompleteAllWaves();
-                return;
-            }
 
-            BeginCurrentWave();
-        }
+        int nextIndex = hasStarted
+            ? currentWaveIndex + 1
+            : currentWaveIndex;
+
+        if (nextIndex >= waves.Length)
+            return;
+
+        if (!ValidateWave(waves[nextIndex]))
+            return;
+
+        currentWaveIndex = nextIndex;
+        BeginCurrentWave();
     }
-    private bool ValidateWaves()
+
+    private bool ValidateWave(Wavedata wave)
     {
-        if (waves == null || waves.Length == 0)
+        if (wave == null ||
+            wave.groups == null ||
+            wave.groups.Length == 0)
         {
-            Debug.LogError("EnemySpawn chưa được gán Wave.", this);
+            SetSpawnError("Wave chưa có nhóm quái.");
             return false;
         }
 
-        if (currentWaveIndex < 0 || currentWaveIndex >= waves.Length)
+        foreach (EnemyGroup group in wave.groups)
         {
-            Debug.LogError("Current Wave Index không hợp lệ.", this);
-            return false;
-        }
-
-        for (int i = currentWaveIndex; i < waves.Length; i++)
-        {
-            Wavedata wave = waves[i];
-
-            if (wave == null ||
-                wave.groups == null ||
-                wave.groups.Length == 0)
+            if (group == null || group.count <= 0)
             {
-                Debug.LogError(
-                    $"Wave {i + 1} chưa có nhóm quái.",
-                    this
-                );
+                SetSpawnError("Wave có nhóm quái không hợp lệ.");
                 return false;
             }
 
-            foreach (EnemyGroup group in wave.groups)
+            if (!poolDictionary.TryGetValue(
+                    group.enemyType, out ObjectPooler pool) ||
+                pool == null)
             {
-                if (group == null || group.count <= 0)
-                {
-                    Debug.LogError(
-                        $"Wave {i + 1} có nhóm quái không hợp lệ.",
-                        this
-                    );
-                    return false;
-                }
-
-                if (!poolDictionary.TryGetValue(
-                        group.enemyType, out ObjectPooler pool) ||
-                    pool == null)
-                {
-                    Debug.LogError(
-                        $"Wave {i + 1}: chưa gán pool {group.enemyType}.",
-                        this
-                    );
-                    return false;
-                }
+                SetSpawnError($"Chưa gán pool {group.enemyType}.");
+                return false;
             }
         }
 
@@ -154,116 +149,125 @@ public class EnemySpawn : MonoBehaviour
 
     private void BeginCurrentWave()
     {
+        hasStarted = true;
+        waveRunning = true;
+
         spawncouter = 0;
         enemiesRemoved = 0;
-        groupsStillSpawning = 0;
-        wavesCoolDown = 0f;
-        isBetweenWaves = false;
+
+        activeGroups.Clear();
+
+        foreach (EnemyGroup group in waves[currentWaveIndex].groups)
+        {
+            activeGroups.Add(new GroupProgress
+            {
+                enemyType = group.enemyType,
+                remaining = group.count,
+                interval = Mathf.Max(0.01f, group.spawnInterval),
+                timeUntilSpawn = Mathf.Max(0f, group.startDelay)
+            });
+        }
+
+        groupsStillSpawning = activeGroups.Count;
 
         OnWaveChanged?.Invoke(currentWaveIndex);
-        StartWaveGroup(CurrentWave);
     }
 
-    protected void CheckWave()
+    private void Update()
     {
-        if (isBetweenWaves)
+        if (!initialized ||
+            !waveRunning ||
+            allWavesCompleted ||
+            hasSpawnError)
         {
-            wavesCoolDown -= Time.deltaTime;
-
-            if (wavesCoolDown > 0f)
-                return;
-            currentWaveIndex++;
-            if (currentWaveIndex >= waves.Length)
-            {
-                CompleteAllWaves();
-                return;
-            }
-            BeginCurrentWave();
             return;
         }
 
-        if (groupsStillSpawning > 0 || enemiesRemoved < spawncouter)
+        if (Time.deltaTime <= 0f)
             return;
+
+        if (GameManager.Instance == null ||
+            GameManager.Instance.Hp <= 0)
+        {
+            return;
+        }
+
+        if (UIController.Instance != null &&
+            UIController.Instance.IsGameplayBlocked)
+        {
+            return;
+        }
+
+        foreach (GroupProgress group in activeGroups)
+        {
+            if (group.remaining <= 0)
+                continue;
+
+            group.timeUntilSpawn -= Time.deltaTime;
+
+            // Giữ phần thời gian dư nếu frame chậm.
+            while (group.remaining > 0 &&
+                   group.timeUntilSpawn <= 0f)
+            {
+                if (!SpawnOneEnemy(group.enemyType))
+                {
+                    SetSpawnError(
+                        "Spawn thất bại. Kiểm tra prefab, EnemyData và pool."
+                    );
+                    return;
+                }
+
+                group.remaining--;
+
+                if (group.remaining == 0)
+                {
+                    groupsStillSpawning--;
+                }
+                else
+                {
+                    group.timeUntilSpawn += group.interval;
+                }
+            }
+        }
+
+        CheckWaveFinished();
+    }
+
+    private void CheckWaveFinished()
+    {
+        if (groupsStillSpawning > 0 ||
+            enemiesRemoved < spawncouter)
+        {
+            return;
+        }
+
+        waveRunning = false;
+        activeGroups.Clear();
 
         if (currentWaveIndex >= waves.Length - 1)
         {
-            CompleteAllWaves();
-            return;
+            allWavesCompleted = true;
+            OnAllWavesCompleted?.Invoke();
         }
 
-        wavesCoolDown = Mathf.Max(0f, CurrentWave.TimeNextWave);
-        isBetweenWaves = true;
-    }
-    private void CompleteAllWaves()
-    {
-        if (allWavesCompleted)
-            return;
-
-        allWavesCompleted = true;
-        enabled = false;
-
-        OnAllWavesCompleted?.Invoke();
+        // Nếu chưa phải Wave cuối:
+        // giữ trạng thái chờ vô hạn cho tới khi bấm nút.
     }
 
-    protected void HandleEnemyReachEnd(EnemyData data)
+    private void HandleEnemyReachEnd(EnemyData data)
     {
-        if (!hasStarted || allWavesCompleted)
-            return;
-
-        enemiesRemoved++;
-    }
-
-    protected void HandleEnemyDie(EnemyStatus enemy)
-    {
-        if (!hasStarted || allWavesCompleted)
-            return;
-
-        enemiesRemoved++;
-    }
-
-    private void StartWaveGroup(Wavedata wave)
-    {
-        groupsStillSpawning = wave.groups.Length;
-
-        foreach (EnemyGroup group in wave.groups)
+        if (waveRunning && !allWavesCompleted)
         {
-            StartCoroutine(SpawnGroup(group));
+            enemiesRemoved++;
         }
     }
 
-    private IEnumerator SpawnGroup(EnemyGroup group)
+    private void HandleEnemyDie(EnemyStatus enemy)
     {
-        if (group.startDelay > 0f)
+        if (waveRunning && !allWavesCompleted)
         {
-            yield return new WaitForSeconds(group.startDelay);
+            enemiesRemoved++;
         }
-
-        for (int i = 0; i < group.count; i++)
-        {
-            if (hasSpawnError)
-                break;
-
-            if (!SpawnOneEnemy(group.enemyType))
-            {
-                // Không tự chuyển Wave nếu spawn bị lỗi.
-                hasSpawnError = true;
-
-                Debug.LogError(
-                    "Đã dừng spawn. Hãy sửa lỗi trong Console rồi chạy lại.",
-                    this
-                );
-                break;
-            }
-
-            if (i < group.count - 1)
-            {
-                yield return new WaitForSeconds(
-                    Mathf.Max(0.01f, group.spawnInterval)
-                );
-            }
-        }
-
-        groupsStillSpawning--;
     }
 
     private bool SpawnOneEnemy(EnemyType enemyType)
@@ -272,30 +276,23 @@ public class EnemySpawn : MonoBehaviour
                 enemyType, out ObjectPooler pool) ||
             pool == null)
         {
-            Debug.LogError($"Chưa gán pool {enemyType}.", this);
             return false;
         }
 
         GameObject enemy = pool.GetPoolObj();
 
         if (enemy == null)
-        {
-            Debug.LogError($"Pool {enemyType} không trả về enemy.", this);
             return false;
-        }
 
         EnemyStatus status = enemy.GetComponent<EnemyStatus>();
 
         if (status == null)
         {
-            Debug.LogError("Prefab enemy thiếu EnemyStatus.", enemy);
+            Debug.LogError("Prefab thiếu EnemyStatus.", enemy);
             return false;
         }
 
-        // Chuẩn bị HP trước khi bật quái.
         status.PrepareForWave(currentWaveIndex + 1);
-
-        // Mọi quái xuất hiện tại vị trí EnemySpawn.
         enemy.transform.position = transform.position;
 
         spawncouter++;
@@ -304,14 +301,15 @@ public class EnemySpawn : MonoBehaviour
         if (!enemy.activeInHierarchy)
         {
             spawncouter--;
-
-            Debug.LogError(
-                "Enemy không được kích hoạt. Kiểm tra EnemyData và pool.",
-                enemy
-            );
             return false;
         }
 
         return true;
+    }
+
+    private void SetSpawnError(string message)
+    {
+        hasSpawnError = true;
+        Debug.LogError(message, this);
     }
 }

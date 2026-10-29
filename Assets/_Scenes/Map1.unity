@@ -1161,6 +1161,7 @@ MonoBehaviour:
   hpText: {fileID: 1716879005}
   goldText: {fileID: 2025600821}
   enemySpawn: {fileID: 2090247934}
+  matchRecorder: {fileID: 0}
   towerPanel: {fileID: 1922866195}
   pausePanel: {fileID: 810384486}
   LosePanel: {fileID: 715091490}
@@ -1481,6 +1482,52 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &350124179
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 350124181}
+  - component: {fileID: 350124180}
+  m_Layer: 0
+  m_Name: MatchRecorder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &350124180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 350124179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b46446b561aaa22419f6b97000de415f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchRecorder
+  enemySpawn: {fileID: 2090247934}
+  saveInterval: 30
+--- !u!4 &350124181
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 350124179}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.46433, y: -5.55283, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &354724331
 GameObject:
   m_ObjectHideFlags: 0
@@ -9532,9 +9579,6 @@ MonoBehaviour:
   enemiesRemoved: 0
   spawncouter: 0
   groupsStillSpawning: 0
-  wavesCoolDown: 0
-  isBetweenWaves: 0
-  hasStarted: 0
 --- !u!4 &2090247935
 Transform:
   m_ObjectHideFlags: 0
@@ -10094,3 +10138,4 @@ SceneRoots:
   - {fileID: 1417727165}
   - {fileID: 1059967023}
   - {fileID: 2027633308}
+  - {fileID: 350124181}

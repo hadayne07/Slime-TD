@@ -2,22 +2,38 @@
 
 public class TowerCtrl : MonoBehaviour
 {
+    private TowerShoot towerShoot;
 
-    private TowerTarget towerTarget;
-    private TowerShoot towershoot;
-   [SerializeField] private float timeDelay = 0f;
+    [SerializeField] private float timeDelay;
+
     private void Awake()
     {
-        towershoot = GetComponent<TowerShoot>();
-         towerTarget = GetComponent<TowerTarget>();
+        towerShoot = GetComponent<TowerShoot>();
     }
 
     private void Update()
     {
-        timeDelay += Time.deltaTime;
-        if (timeDelay < towershoot.Data.TimeShoot) return;
-        timeDelay = 0f;
-        towershoot.Shoot();
+        if (towerShoot == null || towerShoot.Data == null)
+            return;
 
+        // Không xử lý phát bắn khi game đang pause.
+        if (Time.deltaTime <= 0f)
+            return;
+
+        float interval = Mathf.Max(
+            0.01f,
+            towerShoot.Data.TimeShoot
+        );
+
+        timeDelay += Time.deltaTime;
+
+        // Có thể xử lý nhiều lượt bắn đến hạn trong một frame.
+        while (timeDelay >= interval)
+        {
+            // Giữ lại phần thời gian dư.
+            timeDelay -= interval;
+
+            towerShoot.Shoot();
+        }
     }
 }
