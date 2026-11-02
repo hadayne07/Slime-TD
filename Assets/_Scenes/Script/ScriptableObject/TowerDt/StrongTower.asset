@@ -22,7 +22,7 @@ MonoBehaviour:
   cost: 80
   upgradecost: 90
   spritelv1: {fileID: -3476730113220672089, guid: 6bcd12141f04850459d15c07e0a6996e, type: 3}
-  spritelv2: {fileID: 21300000, guid: f8e54d0087182a74cba660478eb83e90, type: 3}
+  spritelv2: {fileID: -373571242280816505, guid: 651e9ef8a2c73364cb8f996151ac85b4, type: 3}
   timeEffectlv1: 0
   timeEffectlv2: 0
   damageEffectlv1: 0
