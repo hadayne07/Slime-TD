@@ -14,6 +14,7 @@ public sealed class TelemetryEventLogger : MonoBehaviour
 
     public static TelemetryEventLogger Instance { get; private set; }
     public static string SessionId { get; private set; }
+    public static event Action<bool> UserActionRecorded;
 
     [Serializable]
     private sealed class EventRecord
@@ -35,6 +36,7 @@ public sealed class TelemetryEventLogger : MonoBehaviour
         public string objectiveId;
 
         public string reason;
+        public string source;
         public string outcomeRaw;
         public string enemyType;
         public string attackerType;
@@ -86,6 +88,7 @@ public sealed class TelemetryEventLogger : MonoBehaviour
     private string filePath;
     private double startedAtReal;
     private string activeSegmentId;
+    private string currentMapId;
     private bool segmentOpen;
     private bool sessionEnded;
 
@@ -122,23 +125,65 @@ public sealed class TelemetryEventLogger : MonoBehaviour
             SessionId = Guid.NewGuid().ToString("N");
 
         Scene activeScene = SceneManager.GetActiveScene();
-        if (IsGameplayScene(activeScene.name))
+        if (IsGameplayScene(activeScene))
+        {
             BeginSession(activeScene);
+            EnsureMatchRecorder(activeScene);
+        }
     }
 
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (IsGameplayScene(scene.name) && (sessionEnded || string.IsNullOrEmpty(filePath)))
+        if (!IsGameplayScene(scene))
+            return;
+
+        bool newMatch = sessionEnded || string.IsNullOrEmpty(filePath) || currentMapId != scene.name;
+        if (newMatch)
         {
+            if (!sessionEnded && !string.IsNullOrEmpty(filePath))
+                EndSession("left", "left");
+
             SessionId = Guid.NewGuid().ToString("N");
             BeginSession(scene);
         }
+
+        EnsureMatchRecorder(scene);
     }
 
-    private static bool IsGameplayScene(string sceneName)
+    private static bool IsGameplayScene(Scene scene)
     {
-        return !string.IsNullOrEmpty(sceneName) &&
-               sceneName.StartsWith("Map", StringComparison.OrdinalIgnoreCase);
+        if (!scene.IsValid() || !scene.isLoaded ||
+            string.IsNullOrEmpty(scene.name) ||
+            !scene.name.StartsWith("Map", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        bool hasGameManager = false;
+        bool hasEnemySpawn = false;
+        foreach (GameObject root in scene.GetRootGameObjects())
+        {
+            if (root.GetComponentInChildren<GameManager>(true) != null)
+                hasGameManager = true;
+            if (root.GetComponentInChildren<EnemySpawn>(true) != null)
+                hasEnemySpawn = true;
+        }
+
+        return hasGameManager && hasEnemySpawn;
+    }
+
+    private static void EnsureMatchRecorder(Scene scene)
+    {
+        foreach (GameObject root in scene.GetRootGameObjects())
+        {
+            if (root.GetComponentInChildren<MatchRecorder>(true) != null)
+                return;
+        }
+
+        GameObject recorderObject = new GameObject("MatchRecorder (Auto)");
+        if (recorderObject.scene != scene)
+            SceneManager.MoveGameObjectToScene(recorderObject, scene);
+        recorderObject.AddComponent<MatchRecorder>();
     }
 
     private void BeginSession(Scene scene)
@@ -146,6 +191,7 @@ public sealed class TelemetryEventLogger : MonoBehaviour
         sessionEnded = false;
         segmentOpen = false;
         activeSegmentId = null;
+        currentMapId = scene.name;
         startedAtReal = Time.realtimeSinceStartupAsDouble;
 
         string directory = Path.Combine(Application.persistentDataPath, "Telemetry");
@@ -199,6 +245,7 @@ public sealed class TelemetryEventLogger : MonoBehaviour
             record.wave = wave;
             record.hasWave = true;
         });
+        UserActionRecorded?.Invoke(false);
     }
 
     public static void RecordEnemySpawn(EnemyType enemyType, int wave, Vector3 position)
@@ -240,7 +287,7 @@ public sealed class TelemetryEventLogger : MonoBehaviour
             record.hasDamage = true;
             record.hp = hpAfter;
             record.hasHp = true;
-            record.reason = "enemy_leak";
+            record.source = "enemy_leak";
         });
     }
 
@@ -271,6 +318,7 @@ public sealed class TelemetryEventLogger : MonoBehaviour
             record.hasCost = towerData != null;
             record.positionBucket = MakePositionBucket(position);
         });
+        UserActionRecorded?.Invoke(false);
     }
 
     public static void RecordTowerUpgrade(TowerData towerData, int level)
@@ -286,6 +334,7 @@ public sealed class TelemetryEventLogger : MonoBehaviour
             record.cost = towerData != null ? towerData.UpgradeCost : 0;
             record.hasCost = towerData != null;
         });
+        UserActionRecorded?.Invoke(false);
     }
 
     public static void RecordInvalidAction(string actionType, string reason, TowerData towerData = null)
@@ -303,6 +352,7 @@ public sealed class TelemetryEventLogger : MonoBehaviour
                 : (actionType == "tower_upgrade" ? towerData.UpgradeCost : towerData.Cost);
             record.hasCost = towerData != null;
         });
+        UserActionRecorded?.Invoke(true);
     }
 
     /// <summary>

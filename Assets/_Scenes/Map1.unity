@@ -1587,7 +1587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchRecorder
   enemySpawn: {fileID: 2090247934}
-  saveInterval: 30
+  saveInterval: 5
 --- !u!4 &350124181
 Transform:
   m_ObjectHideFlags: 0

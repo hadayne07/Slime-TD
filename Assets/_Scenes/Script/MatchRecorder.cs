@@ -6,131 +6,183 @@ using UnityEngine.SceneManagement;
 
 public class MatchRecorder : MonoBehaviour
 {
+    private const string SnapshotSchemaVersion = "telemetry-v1";
+    private const string ObjectiveId = "defend_core";
+    private const double RecentWindowSeconds = 5d;
+    private const double LongWindowSeconds = 30d;
+
     [Header("Tham chiếu")]
     [SerializeField] private EnemySpawn enemySpawn;
 
-    [Header("Chu kỳ lưu - giây thực")]
+    [Header("Chu kỳ lưu snapshot - giây thực")]
     [Min(1f)]
-    [SerializeField] private float saveInterval = 30f;
+    [SerializeField] private float saveInterval = 5f;
 
     [Serializable]
     public class MatchData
     {
-        public int schemaVersion = 1;
-
+        public int schemaVersion = 2;
+        public string telemetrySchemaVersion = SnapshotSchemaVersion;
+        public string sessionId;
+        public string playerIdHash;
+        public string runId;
         public string matchId;
         public string sceneName;
+        public string mapId;
+        public string patchId;
+        public string clientBuild;
+        public string deviceClass;
         public string startedAtUtc;
         public string endedAtUtc;
 
         // InProgress, Won, Lost, Left hoặc Quit.
         public string result;
 
-        public List<MatchSample> samples =
-            new List<MatchSample>();
+        public List<MatchSample> samples = new List<MatchSample>();
     }
 
     [Serializable]
     public class MatchSample
     {
+        public string schemaVersion;
+        public string sessionId;
+        public string playerIdHash;
+        public string runId;
+        public string matchId;
+        public string mapId;
+        public string patchId;
         public string recordedAtUtc;
+        public float elapsedRealSeconds;
+        public string segmentId;
+        public string objectiveId;
         public string reason;
 
         public int wave;
+        public bool hasWave;
         public bool waveStarted;
         public bool waveRunning;
 
+        // Các số optional dùng has* làm mask; giá trị 0 khi mask=false chỉ là placeholder.
+        public int currentDifficulty;
+        public bool hasCurrentDifficulty;
+        public float progressRatio;
+        public bool hasProgressRatio;
         public int hp;
+        public bool hasHp;
+        public int hpMax;
+        public bool hasHpMax;
         public int gold;
+        public bool hasGold;
         public int towerCount;
+        public bool hasTowerCount;
+        public int enemyAlive;
+        public bool hasEnemyAlive;
+        public int kills5s;
+        public bool hasKills5s;
+        public int hitsTaken5s;
+        public bool hasHitsTaken5s;
+        public int hitsTaken30s;
+        public bool hasHitsTaken30s;
+        public int deaths30s;
+        public bool hasDeaths30s;
+        public int enemyLeaks30s;
+        public bool hasEnemyLeaks30s;
+        public int actionCount5s;
+        public bool hasActionCount5s;
+        public float invalidActionRate;
+        public bool hasInvalidActionRate;
+        public float idleRatio5s;
+        public bool hasIdleRatio5s;
+        public float scoreEma;
+        public bool hasScoreEma;
 
-        // Tổng số quái lọt từ đầu trận.
+        // Tương thích với logger trận cũ; combatSeconds là thời gian game, không phải elapsed thực.
         public int enemiesLeaked;
-
-        // Thời gian trong game khi đang chiến đấu.
         public float combatSeconds;
+    }
 
-        // Thời gian thực kể từ khi vào màn.
-        public float elapsedRealSeconds;
+    private sealed class TimedAction
+    {
+        public double timestamp;
+        public bool invalid;
     }
 
     private MatchData matchData;
     private string filePath;
+    private string snapshotFilePath;
 
     private double startedAtReal;
     private double nextSaveAtReal;
     private double combatSeconds;
-
     private int enemiesLeaked;
-
     private bool initialized;
     private bool finished;
+
+    private readonly Queue<double> enemyKillTimes = new Queue<double>();
+    private readonly Queue<double> playerHitTimes = new Queue<double>();
+    private readonly Queue<double> playerDeathTimes = new Queue<double>();
+    private readonly Queue<double> enemyLeakTimes = new Queue<double>();
+    private readonly Queue<TimedAction> userActions = new Queue<TimedAction>();
 
     private void Awake()
     {
         if (enemySpawn == null)
-        {
             enemySpawn = FindFirstObjectByType<EnemySpawn>();
-        }
+    }
 
+    private void OnEnable()
+    {
         EnemyMove.OnEnemyReachEnd += HandleEnemyReachEnd;
         EnemySpawn.OnAllWavesCompleted += HandleAllWavesCompleted;
+        EnemyStatus.enemyDie += HandleEnemyDie;
+        GameManager.OnPlayerHit += HandlePlayerHit;
+        TelemetryEventLogger.UserActionRecorded += HandleUserAction;
     }
 
     private void Start()
     {
         if (enemySpawn == null || GameManager.Instance == null)
         {
-            Debug.LogError(
-                "MatchRecorder cần EnemySpawn và GameManager trong scene.",
-                this
-            );
-
+            Debug.LogError("MatchRecorder cần EnemySpawn và GameManager trong scene.", this);
             enabled = false;
             return;
         }
 
-        // Dùng chung ID với JSONL event log để có thể join hai luồng dữ liệu.
         string matchId = TelemetryEventLogger.SessionId;
         if (string.IsNullOrEmpty(matchId))
-        {
             matchId = Guid.NewGuid().ToString("N");
-        }
 
+        string mapId = SceneManager.GetActiveScene().name;
         matchData = new MatchData
         {
+            sessionId = matchId,
+            playerIdHash = null,
+            runId = matchId,
             matchId = matchId,
-            sceneName = SceneManager.GetActiveScene().name,
+            sceneName = mapId,
+            mapId = mapId,
+            patchId = null,
+            clientBuild = Application.version,
+            deviceClass = SystemInfo.deviceType.ToString().ToLowerInvariant(),
             startedAtUtc = DateTime.UtcNow.ToString("O"),
             result = "InProgress"
         };
 
-        string folderPath = System.IO.Path.Combine(
-            Application.persistentDataPath,
-            "MatchLogs"
-        );
-
-        string fileName =
-            $"match_{DateTime.UtcNow:yyyyMMdd_HHmmss}_{matchId}.json";
-
-        filePath = System.IO.Path.Combine(
-            folderPath,
-            fileName
-        );
+        string matchDirectory = Path.Combine(Application.persistentDataPath, "MatchLogs");
+        string telemetryDirectory = Path.Combine(Application.persistentDataPath, "Telemetry");
+        string fileName = string.Format("match_{0:yyyyMMdd_HHmmss}_{1}.json", DateTime.UtcNow, matchId);
+        string snapshotFileName = string.Format("snapshots_{0:yyyyMMdd_HHmmss}_{1}.jsonl", DateTime.UtcNow, matchId);
+        filePath = Path.Combine(matchDirectory, fileName);
+        snapshotFilePath = Path.Combine(telemetryDirectory, snapshotFileName);
 
         startedAtReal = Time.realtimeSinceStartupAsDouble;
-
-        nextSaveAtReal =
-            startedAtReal + Mathf.Max(1f, saveInterval);
-
+        saveInterval = Mathf.Max(1f, saveInterval);
+        nextSaveAtReal = startedAtReal + saveInterval;
         initialized = true;
 
         CaptureSample("Start");
-
-        Debug.Log(
-            $"File thống kê trận đấu: {filePath}",
-            this
-        );
+        Debug.Log("File thống kê trận đấu: " + filePath, this);
+        Debug.Log("File snapshot JSONL: " + snapshotFilePath, this);
     }
 
     private void LateUpdate()
@@ -138,36 +190,24 @@ public class MatchRecorder : MonoBehaviour
         if (!initialized || finished)
             return;
 
-        if (enemySpawn != null &&
-            enemySpawn.isActiveAndEnabled &&
-            enemySpawn.IsWaveRunning &&
-            GameManager.Instance != null &&
-            GameManager.Instance.Hp > 0)
+        if (enemySpawn != null && enemySpawn.isActiveAndEnabled && enemySpawn.IsWaveRunning &&
+            GameManager.Instance != null && GameManager.Instance.Hp > 0)
         {
             combatSeconds += Time.deltaTime;
         }
 
-        if (GameManager.Instance != null &&
-            GameManager.Instance.Hp <= 0)
+        if (GameManager.Instance != null && GameManager.Instance.Hp <= 0)
         {
             FinishMatch("Lost");
             return;
         }
 
         double now = Time.realtimeSinceStartupAsDouble;
-
         if (now >= nextSaveAtReal)
         {
             CaptureSample("Interval");
-
-            // Nếu ứng dụng bị khựng, chỉ ghi một mẫu hiện tại.
             double interval = Mathf.Max(1f, saveInterval);
-
-            double intervalsPassed =
-                Math.Floor(
-                    (now - nextSaveAtReal) / interval
-                ) + 1d;
-
+            double intervalsPassed = Math.Floor((now - nextSaveAtReal) / interval) + 1d;
             nextSaveAtReal += intervalsPassed * interval;
         }
     }
@@ -178,6 +218,38 @@ public class MatchRecorder : MonoBehaviour
             return;
 
         enemiesLeaked++;
+        enemyLeakTimes.Enqueue(Time.realtimeSinceStartupAsDouble);
+    }
+
+    private void HandleEnemyDie(EnemyStatus enemy)
+    {
+        if (!initialized || finished)
+            return;
+
+        enemyKillTimes.Enqueue(Time.realtimeSinceStartupAsDouble);
+    }
+
+    private void HandlePlayerHit(int damage, int hpAfter)
+    {
+        if (!initialized || finished)
+            return;
+
+        double now = Time.realtimeSinceStartupAsDouble;
+        playerHitTimes.Enqueue(now);
+        if (hpAfter <= 0)
+            playerDeathTimes.Enqueue(now);
+    }
+
+    private void HandleUserAction(bool invalid)
+    {
+        if (!initialized || finished)
+            return;
+
+        userActions.Enqueue(new TimedAction
+        {
+            timestamp = Time.realtimeSinceStartupAsDouble,
+            invalid = invalid
+        });
     }
 
     private void HandleAllWavesCompleted()
@@ -185,12 +257,9 @@ public class MatchRecorder : MonoBehaviour
         if (!initialized || finished)
             return;
 
-        string result =
-            GameManager.Instance != null &&
-            GameManager.Instance.Hp <= 0
-                ? "Lost"
-                : "Won";
-
+        string result = GameManager.Instance != null && GameManager.Instance.Hp <= 0
+            ? "Lost"
+            : "Won";
         FinishMatch(result);
     }
 
@@ -200,10 +269,8 @@ public class MatchRecorder : MonoBehaviour
             return;
 
         finished = true;
-
         matchData.result = result;
         matchData.endedAtUtc = DateTime.UtcNow.ToString("O");
-
         CaptureSample("End");
     }
 
@@ -213,80 +280,171 @@ public class MatchRecorder : MonoBehaviour
             return;
 
         GameManager gameManager = GameManager.Instance;
+        double now = Time.realtimeSinceStartupAsDouble;
+        PruneOlderThan(enemyKillTimes, now - LongWindowSeconds);
+        PruneOlderThan(playerHitTimes, now - LongWindowSeconds);
+        PruneOlderThan(playerDeathTimes, now - LongWindowSeconds);
+        PruneOlderThan(enemyLeakTimes, now - LongWindowSeconds);
+        PruneActions(now - RecentWindowSeconds);
 
-        MatchSample previous =
-            matchData.samples.Count > 0
-                ? matchData.samples[matchData.samples.Count - 1]
-                : null;
+        bool hasWave = enemySpawn != null && enemySpawn.hasStarted;
+        int wave = hasWave ? enemySpawn.CurrentWaveIndex + 1 : 0;
+        bool hasProgress = enemySpawn != null && enemySpawn.TotalWaves > 0;
+        int completedWaves = 0;
+        if (hasWave)
+            completedWaves = enemySpawn.CurrentWaveIndex + (enemySpawn.IsWaveRunning ? 0 : 1);
+        float progressRatio = hasProgress
+            ? Mathf.Clamp01((float)completedWaves / enemySpawn.TotalWaves)
+            : 0f;
+
+        bool hasHp = gameManager != null;
+        bool hasGold = gameManager != null;
+        bool hasHpMax = gameManager != null;
+        int activeEnemies = CountLivingEnemies();
+        int towerCount = CountTowers();
+        int actionCount = userActions.Count;
+        int invalidActions = CountInvalidActions();
 
         MatchSample sample = new MatchSample
         {
+            schemaVersion = SnapshotSchemaVersion,
+            sessionId = matchData.sessionId,
+            playerIdHash = null,
+            runId = matchData.runId,
+            matchId = matchData.matchId,
+            mapId = matchData.mapId,
+            patchId = null,
             recordedAtUtc = DateTime.UtcNow.ToString("O"),
+            elapsedRealSeconds = (float)(now - startedAtReal),
+            segmentId = hasWave ? string.Format("wave-{0:00}", wave) : null,
+            objectiveId = ObjectiveId,
             reason = reason,
-
-            wave = enemySpawn != null
-                ? enemySpawn.CurrentWaveIndex + 1
-                : (previous != null ? previous.wave : 0),
-
-            waveStarted =
-                enemySpawn != null && enemySpawn.hasStarted,
-
-            waveRunning =
-                enemySpawn != null && enemySpawn.IsWaveRunning,
-
-            hp = gameManager != null
-                ? gameManager.Hp
-                : (previous != null ? previous.hp : 0),
-
-            gold = gameManager != null
-                ? gameManager.Gold
-                : (previous != null ? previous.gold : 0),
-
-            towerCount = CountTowers(),
-
-            enemiesLeaked = this.enemiesLeaked,
-
-            combatSeconds = (float)this.combatSeconds,
-
-            elapsedRealSeconds = (float)(
-                Time.realtimeSinceStartupAsDouble - startedAtReal
-            )
+            wave = wave,
+            hasWave = hasWave,
+            waveStarted = enemySpawn != null && enemySpawn.hasStarted,
+            waveRunning = enemySpawn != null && enemySpawn.IsWaveRunning,
+            currentDifficulty = 0,
+            hasCurrentDifficulty = false,
+            progressRatio = progressRatio,
+            hasProgressRatio = hasProgress,
+            hp = hasHp ? gameManager.Hp : 0,
+            hasHp = hasHp,
+            hpMax = hasHpMax ? gameManager.StartingHp : 0,
+            hasHpMax = hasHpMax,
+            gold = hasGold ? gameManager.Gold : 0,
+            hasGold = hasGold,
+            towerCount = towerCount,
+            hasTowerCount = true,
+            enemyAlive = activeEnemies,
+            hasEnemyAlive = true,
+            kills5s = CountSince(enemyKillTimes, now - RecentWindowSeconds),
+            hasKills5s = true,
+            hitsTaken5s = CountSince(playerHitTimes, now - RecentWindowSeconds),
+            hasHitsTaken5s = true,
+            hitsTaken30s = CountSince(playerHitTimes, now - LongWindowSeconds),
+            hasHitsTaken30s = true,
+            deaths30s = CountSince(playerDeathTimes, now - LongWindowSeconds),
+            hasDeaths30s = true,
+            enemyLeaks30s = CountSince(enemyLeakTimes, now - LongWindowSeconds),
+            hasEnemyLeaks30s = true,
+            actionCount5s = actionCount,
+            hasActionCount5s = true,
+            invalidActionRate = actionCount > 0 ? (float)invalidActions / actionCount : 0f,
+            hasInvalidActionRate = actionCount > 0,
+            idleRatio5s = 0f,
+            hasIdleRatio5s = false,
+            scoreEma = 0f,
+            hasScoreEma = false,
+            enemiesLeaked = enemiesLeaked,
+            combatSeconds = (float)combatSeconds
         };
 
         matchData.samples.Add(sample);
-
+        AppendSnapshot(sample);
         SaveFile();
     }
 
-    private int CountTowers()
+    private static void PruneOlderThan(Queue<double> values, double cutoff)
+    {
+        while (values.Count > 0 && values.Peek() < cutoff)
+            values.Dequeue();
+    }
+
+    private void PruneActions(double cutoff)
+    {
+        while (userActions.Count > 0 && userActions.Peek().timestamp < cutoff)
+            userActions.Dequeue();
+    }
+
+    private static int CountSince(Queue<double> values, double cutoff)
+    {
+        int count = 0;
+        foreach (double timestamp in values)
+        {
+            if (timestamp >= cutoff)
+                count++;
+        }
+        return count;
+    }
+
+    private int CountInvalidActions()
+    {
+        int count = 0;
+        foreach (TimedAction action in userActions)
+        {
+            if (action.invalid)
+                count++;
+        }
+        return count;
+    }
+
+    private static int CountLivingEnemies()
+    {
+        EnemyStatus[] enemies = FindObjectsByType<EnemyStatus>(
+            FindObjectsInactive.Exclude,
+            FindObjectsSortMode.None
+        );
+        int count = 0;
+        foreach (EnemyStatus enemy in enemies)
+        {
+            if (enemy != null && enemy.IsAlive)
+                count++;
+        }
+        return count;
+    }
+
+    private static int CountTowers()
     {
         TowerShoot[] towers = FindObjectsByType<TowerShoot>(
             FindObjectsInactive.Exclude,
             FindObjectsSortMode.None
         );
-
         return towers.Length;
+    }
+
+    private void AppendSnapshot(MatchSample sample)
+    {
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(snapshotFilePath));
+            File.AppendAllText(snapshotFilePath, JsonUtility.ToJson(sample, false) + "\n");
+        }
+        catch (Exception exception)
+        {
+            Debug.LogError("Không append được snapshot JSONL:\n" + exception.Message, this);
+        }
     }
 
     private void SaveFile()
     {
         try
         {
-            string directoryPath =
-                System.IO.Path.GetDirectoryName(filePath);
-
-            Directory.CreateDirectory(directoryPath);
-
-            string json = JsonUtility.ToJson(matchData, true);
-
-            File.WriteAllText(filePath, json);
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+            File.WriteAllText(filePath, JsonUtility.ToJson(matchData, true));
         }
         catch (Exception exception)
         {
-            Debug.LogError(
-                $"Không lưu được thống kê trận đấu:\n{exception.Message}",
-                this
-            );
+            Debug.LogError("Không lưu được thống kê trận đấu:\n" + exception.Message, this);
         }
     }
 
@@ -298,12 +456,9 @@ public class MatchRecorder : MonoBehaviour
 
         if (!finished)
         {
-            string result =
-                GameManager.Instance != null &&
-                GameManager.Instance.Hp <= 0
-                    ? "Lost"
-                    : "Left";
-
+            string result = GameManager.Instance != null && GameManager.Instance.Hp <= 0
+                ? "Lost"
+                : "Left";
             FinishMatch(result);
         }
         else
@@ -315,9 +470,7 @@ public class MatchRecorder : MonoBehaviour
     private void OnApplicationPause(bool pauseStatus)
     {
         if (pauseStatus && initialized && !finished)
-        {
             CaptureSample("ApplicationPause");
-        }
     }
 
     private void OnApplicationQuit()
@@ -326,27 +479,23 @@ public class MatchRecorder : MonoBehaviour
             return;
 
         if (!finished)
-        {
             FinishMatch("Quit");
-        }
         else
-        {
             SaveFile();
-        }
+    }
+
+    private void OnDisable()
+    {
+        EnemyMove.OnEnemyReachEnd -= HandleEnemyReachEnd;
+        EnemySpawn.OnAllWavesCompleted -= HandleAllWavesCompleted;
+        EnemyStatus.enemyDie -= HandleEnemyDie;
+        GameManager.OnPlayerHit -= HandlePlayerHit;
+        TelemetryEventLogger.UserActionRecorded -= HandleUserAction;
     }
 
     private void OnDestroy()
     {
-        EnemyMove.OnEnemyReachEnd -= HandleEnemyReachEnd;
-        EnemySpawn.OnAllWavesCompleted -= HandleAllWavesCompleted;
-
-        // Lưu dữ liệu đã thu thập nếu chưa kết thúc trận.
         if (initialized && !finished)
-        {
-            matchData.result = "Left";
-            matchData.endedAtUtc = DateTime.UtcNow.ToString("O");
-
-            SaveFile();
-        }
+            FinishMatch("Left");
     }
 }

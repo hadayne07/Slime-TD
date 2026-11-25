@@ -12,6 +12,7 @@ public class EnemySpawn : MonoBehaviour
     [SerializeField] private int currentWaveIndex;
 
     public int CurrentWaveIndex => currentWaveIndex;
+    public int TotalWaves => waves != null ? waves.Length : 0;
 
     [Header("Pool")]
     [SerializeField] private ObjectPooler Greenpool;

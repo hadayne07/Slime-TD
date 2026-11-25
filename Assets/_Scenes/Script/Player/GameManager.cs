@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 
     public static Action<int> CurrentHp;
     public static Action<int> CurrentGold;
+    public static Action<int, int> OnPlayerHit;
 
     [Header("Player")]
     [SerializeField] private int hp = 100;
@@ -18,6 +19,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float gamespeed = 1f;
 
     public int Hp => hp;
+    // HP khởi đầu được dùng làm HP tối đa trong prototype hiện tại (chưa có hồi máu).
+    public int StartingHp { get; private set; }
     public int Gold => gold;
     public float GameSpeed => gamespeed;
 
@@ -32,6 +35,7 @@ public class GameManager : MonoBehaviour
         Instance = this;
 
         hp = Mathf.Max(0, hp);
+        StartingHp = hp;
         gold = Mathf.Max(0, gold);
 
         SetTimeScale(gamespeed);
@@ -67,11 +71,12 @@ public class GameManager : MonoBehaviour
 
     private void HandleEnemyReachEnd(EnemyData data)
     {
-        if (data == null) return;
+        if (data == null || hp <= 0) return;
 
         hp = Mathf.Max(0, hp - data.Damage);
 
         TelemetryEventLogger.RecordPlayerHit(data.Damage, hp);
+        OnPlayerHit?.Invoke(data.Damage, hp);
         CurrentHp?.Invoke(hp);
 
         if (hp <= 0)
