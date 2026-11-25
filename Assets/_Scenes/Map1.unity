@@ -1236,7 +1236,7 @@ MonoBehaviour:
   hpText: {fileID: 1716879005}
   goldText: {fileID: 2025600821}
   enemySpawn: {fileID: 2090247934}
-  matchRecorder: {fileID: 0}
+  matchRecorder: {fileID: 350124180}
   towerPanel: {fileID: 1922866195}
   pausePanel: {fileID: 810384486}
   LosePanel: {fileID: 715091490}
