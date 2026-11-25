@@ -69,7 +69,7 @@
 }
 ```
 
-Hai mẫu dùng cùng bộ metric. `playerIdHash` và `patchId` không thể được điền hợp lệ ở prototype này, nên logger để `null`; không dùng tên/email hoặc hash trần thay thế. Các giá trị không có nguồn được đánh dấu bằng trường `has... = false` (mask 0), thay vì ghi số 0 như một quan sát thật.
+Hai mẫu dùng cùng bộ metric. `playerIdHash` và `patchId` không thể được điền hợp lệ ở prototype này, nên logger xuất JSON `null`; không dùng tên/email hoặc hash trần thay thế. Với mọi trường telemetry không có nguồn, JSON ghi `null` và trường `has... = false` giữ vai trò mask 0. Như vậy giá trị null không bị hiểu nhầm là số 0 được quan sát thật.
 
 ## 2. Event log theo mục 3.1
 
@@ -94,9 +94,9 @@ Event records có schema/session/run/match/map, timestamp UTC, elapsed time, seg
 
 `MatchRecorder` hiện giữ file JSON tổng hợp một trận trong `Application.persistentDataPath/MatchLogs/`, đồng thời append từng snapshot vào JSONL trong `Application.persistentDataPath/Telemetry/`. Snapshot ghi ngay khi bắt đầu, theo chu kỳ 5 giây thực, khi kết thúc và khi app pause. `Map1` được cấu hình `saveInterval: 5`; nếu scene gameplay hợp lệ khác chưa có recorder, event logger tự tạo đúng một recorder lúc scene tải.
 
-Snapshot hiện ghi metadata/schema/masks và các trường có dữ liệu: wave, tiến độ theo wave, HP hiện tại/HP khởi đầu, gold, tower count, enemy sống, kills 5 giây, hits 5/30 giây, deaths/leaks 30 giây, action count 5 giây và invalid-action rate. `progressRatio` là số wave đã hoàn thành chia tổng wave, nên là xấp xỉ tiến độ theo quy ước game, không phải tỷ lệ tiến độ thời gian trong một wave.
+Snapshot hiện ghi metadata/schema/masks và các trường có dữ liệu: wave, tiến độ theo wave, HP hiện tại/HP khởi đầu, gold, tower count, enemy sống, kills 5 giây, hits 5/30 giây, deaths/leaks 30 giây, action count 5 giây và invalid-action rate. Trường không có dữ liệu được serialize thành JSON `null` trong snapshot JSONL và JSON trận tổng hợp; `has...` vẫn giữ mask. `progressRatio` là số wave đã hoàn thành chia tổng wave, nên là xấp xỉ tiến độ theo quy ước game, không phải tỷ lệ tiến độ thời gian trong một wave.
 
-`actionCount5s` hiện phản ánh những action đã instrument: bắt đầu wave, xây/nâng cấp tháp thành công và các thao tác build/upgrade bị từ chối được ghi là invalid. Nó chưa phải tổng mọi input/UI action. `invalidActionRate` được mask thiếu khi trong cửa sổ 5 giây không có action nào.
+`actionCount5s` hiện phản ánh những action đã instrument: bắt đầu wave, xây/nâng cấp tháp thành công và các thao tác build/upgrade bị từ chối được ghi là invalid. Nó chưa phải tổng mọi input/UI action. Nếu trong cửa sổ 5 giây không có action nào, `invalidActionRate` được ghi JSON `null` và `hasInvalidActionRate=false`.
 
 ### Coverage snapshot
 
@@ -144,7 +144,7 @@ Snapshot hiện ghi metadata/schema/masks và các trường có dữ liệu: wa
 
 ## 5. Dữ liệu còn thiếu so với báo cáo nghiên cứu
 
-Không nên dùng log này để khẳng định đã có candidate-conditioned DDA dataset. Hiện prototype chưa áp dụng difficulty và không phát `difficulty_applied`; do đó không có `currentDifficulty`, candidate/applied profile, difficulty vector/mask quan sát thật, policy mode, propensity, random seed, controller/model version. `idleRatio5s`, `scoreEma`, `playerIdHash`, `patchId`, `ability_used`, attacker chính xác, `crash` và `disconnect` cũng chưa có nguồn dữ liệu. Các field thiếu được giữ null hoặc mask 0.
+Không nên dùng log này để khẳng định đã có candidate-conditioned DDA dataset. Hiện prototype chưa áp dụng difficulty và không phát `difficulty_applied`; do đó không có `currentDifficulty`, candidate/applied profile, difficulty vector/mask quan sát thật, policy mode, propensity, random seed, controller/model version. `idleRatio5s`, `scoreEma`, `playerIdHash`, `patchId`, `ability_used`, attacker chính xác, `crash` và `disconnect` cũng chưa có nguồn dữ liệu. Field payload chưa khả dụng được xuất JSON `null`, kèm mask false ở các trường số/boolean có `has...`; event không thể phát sinh (ví dụ crash/disconnect/ability) đương nhiên không tạo dòng event.
 
 Ngoài ra, action count mới là tập con action; `hpMax` là HP khởi tạo; `progressRatio` dựa trên số wave; objective success được định nghĩa theo wave clear. Cần xác nhận các semantics này với thiết kế nghiên cứu và kiểm tra log bằng Unity Play Mode trước khi dùng thu thập người tham gia.
 

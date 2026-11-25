@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -62,7 +63,7 @@ public class MatchRecorder : MonoBehaviour
         public bool waveStarted;
         public bool waveRunning;
 
-        // Các số optional dùng has* làm mask; giá trị 0 khi mask=false chỉ là placeholder.
+        // Giữ has* làm mask tương thích pipeline; trường thiếu được serialize thành JSON null.
         public int currentDifficulty;
         public bool hasCurrentDifficulty;
         public float progressRatio;
@@ -427,7 +428,7 @@ public class MatchRecorder : MonoBehaviour
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(snapshotFilePath));
-            File.AppendAllText(snapshotFilePath, JsonUtility.ToJson(sample, false) + "\n");
+            File.AppendAllText(snapshotFilePath, SerializeSampleWithNulls(sample) + "\n");
         }
         catch (Exception exception)
         {
@@ -440,12 +441,164 @@ public class MatchRecorder : MonoBehaviour
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-            File.WriteAllText(filePath, JsonUtility.ToJson(matchData, true));
+            File.WriteAllText(filePath, SerializeMatchDataWithNulls());
         }
         catch (Exception exception)
         {
             Debug.LogError("Không lưu được thống kê trận đấu:\n" + exception.Message, this);
         }
+    }
+
+    private string SerializeMatchDataWithNulls()
+    {
+        string json = JsonUtility.ToJson(matchData, false);
+        json = SetJsonNullWhenMissing(json, nameof(MatchData.playerIdHash), string.IsNullOrEmpty(matchData.playerIdHash));
+        json = SetJsonNullWhenMissing(json, nameof(MatchData.patchId), string.IsNullOrEmpty(matchData.patchId));
+        json = SetJsonNullWhenMissing(json, nameof(MatchData.endedAtUtc), string.IsNullOrEmpty(matchData.endedAtUtc));
+
+        const string samplesKey = "\"samples\":";
+        int keyIndex = json.IndexOf(samplesKey, StringComparison.Ordinal);
+        if (keyIndex < 0)
+            return json;
+
+        int arrayStart = json.IndexOf('[', keyIndex + samplesKey.Length);
+        if (arrayStart < 0)
+            return json;
+
+        int arrayEnd = FindMatchingArrayEnd(json, arrayStart);
+        if (arrayEnd < 0)
+            return json;
+
+        StringBuilder output = new StringBuilder(json.Length + matchData.samples.Count * 16);
+        output.Append(json, 0, arrayStart + 1);
+        for (int i = 0; i < matchData.samples.Count; i++)
+        {
+            if (i > 0)
+                output.Append(',');
+            output.Append(SerializeSampleWithNulls(matchData.samples[i]));
+        }
+        output.Append(json, arrayEnd, json.Length - arrayEnd);
+        return output.ToString();
+    }
+
+    private static string SerializeSampleWithNulls(MatchSample sample)
+    {
+        string json = JsonUtility.ToJson(sample, false);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.playerIdHash), string.IsNullOrEmpty(sample.playerIdHash));
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.patchId), string.IsNullOrEmpty(sample.patchId));
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.segmentId), string.IsNullOrEmpty(sample.segmentId));
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.wave), !sample.hasWave);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.currentDifficulty), !sample.hasCurrentDifficulty);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.progressRatio), !sample.hasProgressRatio);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.hp), !sample.hasHp);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.hpMax), !sample.hasHpMax);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.gold), !sample.hasGold);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.towerCount), !sample.hasTowerCount);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.enemyAlive), !sample.hasEnemyAlive);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.kills5s), !sample.hasKills5s);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.hitsTaken5s), !sample.hasHitsTaken5s);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.hitsTaken30s), !sample.hasHitsTaken30s);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.deaths30s), !sample.hasDeaths30s);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.enemyLeaks30s), !sample.hasEnemyLeaks30s);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.actionCount5s), !sample.hasActionCount5s);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.invalidActionRate), !sample.hasInvalidActionRate);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.idleRatio5s), !sample.hasIdleRatio5s);
+        json = SetJsonNullWhenMissing(json, nameof(MatchSample.scoreEma), !sample.hasScoreEma);
+        return json;
+    }
+
+    private static string SetJsonNullWhenMissing(string json, string fieldName, bool missing)
+    {
+        if (!missing)
+            return json;
+
+        string key = "\"" + fieldName + "\"";
+        int keyIndex = json.IndexOf(key, StringComparison.Ordinal);
+        while (keyIndex >= 0)
+        {
+            int previous = keyIndex - 1;
+            while (previous >= 0 && char.IsWhiteSpace(json[previous]))
+                previous--;
+            if (previous >= 0 && (json[previous] == '{' || json[previous] == ','))
+                break;
+            keyIndex = json.IndexOf(key, keyIndex + key.Length, StringComparison.Ordinal);
+        }
+        if (keyIndex < 0)
+        {
+            int objectEnd = json.LastIndexOf('}');
+            if (objectEnd < 0)
+                return json;
+            int previous = objectEnd - 1;
+            while (previous >= 0 && char.IsWhiteSpace(json[previous]))
+                previous--;
+            string separator = previous >= 0 && json[previous] == '{' ? string.Empty : ",";
+            return json.Insert(objectEnd, separator + key + ":null");
+        }
+
+        int valueStart = json.IndexOf(':', keyIndex + key.Length);
+        if (valueStart < 0)
+            return json;
+
+        valueStart++;
+        while (valueStart < json.Length && char.IsWhiteSpace(json[valueStart]))
+            valueStart++;
+
+        int valueEnd = valueStart;
+        if (valueStart < json.Length && json[valueStart] == '"')
+        {
+            valueEnd++;
+            bool escaped = false;
+            while (valueEnd < json.Length)
+            {
+                char c = json[valueEnd++];
+                if (escaped)
+                    escaped = false;
+                else if (c == '\\')
+                    escaped = true;
+                else if (c == '"')
+                    break;
+            }
+        }
+        else
+        {
+            while (valueEnd < json.Length && json[valueEnd] != ',' && json[valueEnd] != '}' && json[valueEnd] != ']')
+                valueEnd++;
+            while (valueEnd > valueStart && char.IsWhiteSpace(json[valueEnd - 1]))
+                valueEnd--;
+        }
+
+        return json.Substring(0, valueStart) + "null" + json.Substring(valueEnd);
+    }
+
+    private static int FindMatchingArrayEnd(string json, int arrayStart)
+    {
+        int depth = 0;
+        bool insideString = false;
+        bool escaped = false;
+
+        for (int i = arrayStart; i < json.Length; i++)
+        {
+            char c = json[i];
+            if (insideString)
+            {
+                if (escaped)
+                    escaped = false;
+                else if (c == '\\')
+                    escaped = true;
+                else if (c == '"')
+                    insideString = false;
+                continue;
+            }
+
+            if (c == '"')
+                insideString = true;
+            else if (c == '[')
+                depth++;
+            else if (c == ']' && --depth == 0)
+                return i;
+        }
+
+        return -1;
     }
 
     // Gọi trước khi Restart hoặc về Main Menu.
