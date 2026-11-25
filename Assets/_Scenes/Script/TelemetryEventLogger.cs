@@ -502,12 +502,117 @@ public sealed class TelemetryEventLogger : MonoBehaviour
 
         try
         {
-            string line = JsonUtility.ToJson(record, false);
+            string line = SerializeEventRecordWithNulls(record);
             File.AppendAllText(filePath, line + "\n");
         }
         catch (Exception exception)
         {
             Debug.LogError("Không ghi được telemetry event: " + exception.Message, this);
         }
+    }
+
+    private static string SerializeEventRecordWithNulls(EventRecord record)
+    {
+        string json = JsonUtility.ToJson(record, false);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.playerIdHash), string.IsNullOrEmpty(record.playerIdHash));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.patchId), string.IsNullOrEmpty(record.patchId));
+
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.segmentId), string.IsNullOrEmpty(record.segmentId));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.reason), string.IsNullOrEmpty(record.reason));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.source), string.IsNullOrEmpty(record.source));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.outcomeRaw), string.IsNullOrEmpty(record.outcomeRaw));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.enemyType), string.IsNullOrEmpty(record.enemyType));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.attackerType), string.IsNullOrEmpty(record.attackerType));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.actionType), string.IsNullOrEmpty(record.actionType));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.objectType), string.IsNullOrEmpty(record.objectType));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.policyMode), string.IsNullOrEmpty(record.policyMode));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.controllerVersion), string.IsNullOrEmpty(record.controllerVersion));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.modelVersion), string.IsNullOrEmpty(record.modelVersion));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.decisionId), string.IsNullOrEmpty(record.decisionId));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.difficultyVectorJson), string.IsNullOrEmpty(record.difficultyVectorJson));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.difficultyMaskJson), string.IsNullOrEmpty(record.difficultyMaskJson));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.positionBucket), string.IsNullOrEmpty(record.positionBucket));
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.candidateSetJson), string.IsNullOrEmpty(record.candidateSetJson));
+
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.wave), !record.hasWave);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.count), !record.hasCount);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.hp), !record.hasHp);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.hpMax), !record.hasHpMax);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.damage), !record.hasDamage);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.gold), !record.hasGold);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.goldDelta), !record.hasGoldDelta);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.cost), !record.hasCost);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.towerLevel), !record.hasTowerLevel);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.currentDifficulty), !record.hasCurrentDifficulty);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.candidateDifficulty), !record.hasCandidateDifficulty);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.appliedDifficulty), !record.hasAppliedDifficulty);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.randomSeed), !record.hasRandomSeed);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.propensity), !record.hasPropensity);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.safeCheckpoint), !record.hasSafeCheckpoint);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.terminal), !record.hasTerminal);
+        return json;
+    }
+
+    private static string SetJsonNullWhenMissing(string json, string fieldName, bool missing)
+    {
+        if (!missing)
+            return json;
+
+        string key = "\"" + fieldName + "\"";
+        int keyIndex = json.IndexOf(key, StringComparison.Ordinal);
+        while (keyIndex >= 0)
+        {
+            int previous = keyIndex - 1;
+            while (previous >= 0 && char.IsWhiteSpace(json[previous]))
+                previous--;
+            if (previous >= 0 && (json[previous] == '{' || json[previous] == ','))
+                break;
+            keyIndex = json.IndexOf(key, keyIndex + key.Length, StringComparison.Ordinal);
+        }
+        if (keyIndex < 0)
+        {
+            int objectEnd = json.LastIndexOf('}');
+            if (objectEnd < 0)
+                return json;
+            int previous = objectEnd - 1;
+            while (previous >= 0 && char.IsWhiteSpace(json[previous]))
+                previous--;
+            string separator = previous >= 0 && json[previous] == '{' ? string.Empty : ",";
+            return json.Insert(objectEnd, separator + key + ":null");
+        }
+
+        int valueStart = json.IndexOf(':', keyIndex + key.Length);
+        if (valueStart < 0)
+            return json;
+
+        valueStart++;
+        while (valueStart < json.Length && char.IsWhiteSpace(json[valueStart]))
+            valueStart++;
+
+        int valueEnd = valueStart;
+        if (valueStart < json.Length && json[valueStart] == '"')
+        {
+            valueEnd++;
+            bool escaped = false;
+            while (valueEnd < json.Length)
+            {
+                char c = json[valueEnd++];
+                if (escaped)
+                    escaped = false;
+                else if (c == '\\')
+                    escaped = true;
+                else if (c == '"')
+                    break;
+            }
+        }
+        else
+        {
+            while (valueEnd < json.Length && json[valueEnd] != ',' && json[valueEnd] != '}' && json[valueEnd] != ']')
+                valueEnd++;
+            while (valueEnd > valueStart && char.IsWhiteSpace(json[valueEnd - 1]))
+                valueEnd--;
+        }
+
+        return json.Substring(0, valueStart) + "null" + json.Substring(valueEnd);
     }
 }
