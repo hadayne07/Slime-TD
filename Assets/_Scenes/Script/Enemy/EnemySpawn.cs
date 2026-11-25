@@ -12,6 +12,7 @@ public class EnemySpawn : MonoBehaviour
     [SerializeField] private int currentWaveIndex;
 
     public int CurrentWaveIndex => currentWaveIndex;
+    public int TotalWaves => waves != null ? waves.Length : 0;
 
     [Header("Pool")]
     [SerializeField] private ObjectPooler Greenpool;
@@ -170,6 +171,7 @@ public class EnemySpawn : MonoBehaviour
 
         groupsStillSpawning = activeGroups.Count;
 
+        TelemetryEventLogger.RecordSegmentStart(currentWaveIndex + 1);
         OnWaveChanged?.Invoke(currentWaveIndex);
     }
 
@@ -244,9 +246,12 @@ public class EnemySpawn : MonoBehaviour
         waveRunning = false;
         activeGroups.Clear();
 
+        TelemetryEventLogger.RecordWaveCompleted(currentWaveIndex + 1);
+
         if (currentWaveIndex >= waves.Length - 1)
         {
             allWavesCompleted = true;
+            TelemetryEventLogger.EndSession("won", "won");
             OnAllWavesCompleted?.Invoke();
         }
 
@@ -292,7 +297,7 @@ public class EnemySpawn : MonoBehaviour
             return false;
         }
 
-        status.PrepareForWave(currentWaveIndex + 1);
+        status.PrepareForWave(currentWaveIndex + 1, enemyType);
         enemy.transform.position = transform.position;
 
         spawncouter++;
@@ -303,6 +308,12 @@ public class EnemySpawn : MonoBehaviour
             spawncouter--;
             return false;
         }
+
+        TelemetryEventLogger.RecordEnemySpawn(
+            enemyType,
+            currentWaveIndex + 1,
+            transform.position
+        );
 
         return true;
     }

@@ -415,6 +415,7 @@ public class UIController : MonoBehaviour
 
     public void RestartLevel()
     {
+        TelemetryEventLogger.EndSession("left", "left");
         if (matchRecorder != null)
         {
             matchRecorder.EndBeforeLeaving();
@@ -433,6 +434,7 @@ public class UIController : MonoBehaviour
 
     public void GoMainMenu()
     {
+        TelemetryEventLogger.EndSession("left", "left");
         if (matchRecorder != null)
         {
             matchRecorder.EndBeforeLeaving();
@@ -449,6 +451,7 @@ public class UIController : MonoBehaviour
 
     public void QuitGame()
     {
+        TelemetryEventLogger.EndSession("quit", "quit");
         Application.Quit();
     }
     public void CantBuild(TowerData data)

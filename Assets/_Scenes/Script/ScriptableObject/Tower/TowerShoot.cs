@@ -70,17 +70,20 @@ public class TowerShoot : MonoBehaviour
     {
         if (currentlevel >= maxLevel)
         {
+            TelemetryEventLogger.RecordInvalidAction("tower_upgrade", "max_level", data);
             return false;
         }
 
         // Dùng TrySpendGold thay vì SpendGold để đảm bảo đủ vàng
         if (!GameManager.Instance.TrySpendGold(data.UpgradeCost))
         {
+            TelemetryEventLogger.RecordInvalidAction("tower_upgrade", "insufficient_gold", data);
             return false;
         }
 
         currentlevel++;
         CheckLevelData(data.Damagelv2, data.Speedlv2, data.Spritelv2, data.DamageEffectlv2, data.TimeEffectlv2);
+        TelemetryEventLogger.RecordTowerUpgrade(data, currentlevel);
         return true;
     }
 }

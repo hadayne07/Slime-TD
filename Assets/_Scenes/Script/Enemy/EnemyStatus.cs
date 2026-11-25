@@ -6,6 +6,8 @@ public class EnemyStatus : MonoBehaviour
     [Header("Dữ liệu")]
     [SerializeField] private EnemyData data;
 
+    public EnemyType Type => enemyType;
+
     public static Action<EnemyStatus> enemyDie;
     public static Action<EnemyData> goldplus;
 
@@ -22,6 +24,7 @@ public class EnemyStatus : MonoBehaviour
     public float currentSpeed;
 
     private bool isDead;
+    private EnemyType enemyType;
 
     public bool IsAlive =>!isDead && hp > 0f && isActiveAndEnabled;
 
@@ -105,6 +108,12 @@ public class EnemyStatus : MonoBehaviour
             1f + Mathf.Max(0, waveNumber - 10) * 0.03f;
     }
 
+    public void PrepareForWave(int waveNumber, EnemyType type)
+    {
+        PrepareForWave(waveNumber);
+        enemyType = type;
+    }
+
     public void TakeDame(float dame)
     {
         if (!IsAlive || dame <= 0f)
@@ -126,6 +135,7 @@ public class EnemyStatus : MonoBehaviour
 
         isDead = true;
 
+        TelemetryEventLogger.RecordEnemyKill(enemyType);
         goldplus?.Invoke(data);
         enemyDie?.Invoke(this);
 
