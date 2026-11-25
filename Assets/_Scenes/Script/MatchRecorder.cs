@@ -90,7 +90,12 @@ public class MatchRecorder : MonoBehaviour
             return;
         }
 
-        string matchId = Guid.NewGuid().ToString("N");
+        // Dùng chung ID với JSONL event log để có thể join hai luồng dữ liệu.
+        string matchId = TelemetryEventLogger.SessionId;
+        if (string.IsNullOrEmpty(matchId))
+        {
+            matchId = Guid.NewGuid().ToString("N");
+        }
 
         matchData = new MatchData
         {

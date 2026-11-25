@@ -232,6 +232,7 @@ public class TowerPlacementManager : MonoBehaviour
 
         if (!canPlace)
         {
+            TelemetryEventLogger.RecordInvalidAction("tower_build", "invalid_placement", selectedTower);
             CancelPlacement();
             return;
          
@@ -239,6 +240,7 @@ public class TowerPlacementManager : MonoBehaviour
 
         if (selectedTower.Prefab == null)
         {
+            TelemetryEventLogger.RecordInvalidAction("tower_build", "missing_tower_prefab", selectedTower);
             Debug.LogWarning("TowerData chưa được gán prefab tháp thật.");
             CancelPlacement();
             return;
@@ -247,6 +249,7 @@ public class TowerPlacementManager : MonoBehaviour
         // Kiểm tra đủ vàng trước khi xây — dùng TrySpendGold thay vì SpendGold
         if (!GameManager.Instance.TrySpendGold(selectedTower.Cost))
         {
+            TelemetryEventLogger.RecordInvalidAction("tower_build", "insufficient_gold", selectedTower);
             CancelPlacement();
             CantBuildTower?.Invoke(selectedTower);
             return;
@@ -259,6 +262,11 @@ public class TowerPlacementManager : MonoBehaviour
         );
 
         tower.SetActive(true);
+
+        TelemetryEventLogger.RecordTowerBuilt(
+            selectedTower,
+            tower.transform.position
+        );
 
         // Đồng bộ collider tháp vừa tạo để lần đặt sau nhận biết.
         Physics2D.SyncTransforms();

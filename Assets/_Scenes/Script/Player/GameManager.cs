@@ -71,7 +71,13 @@ public class GameManager : MonoBehaviour
 
         hp = Mathf.Max(0, hp - data.Damage);
 
+        TelemetryEventLogger.RecordPlayerHit(data.Damage, hp);
         CurrentHp?.Invoke(hp);
+
+        if (hp <= 0)
+        {
+            TelemetryEventLogger.RecordDeath();
+        }
     }
 
     private void HandleEnemyDestroyed(EnemyData data)
