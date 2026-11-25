@@ -169,12 +169,12 @@ public class MatchRecorder : MonoBehaviour
             result = "InProgress"
         };
 
-        string matchDirectory = Path.Combine(Application.persistentDataPath, "MatchLogs");
-        string telemetryDirectory = Path.Combine(Application.persistentDataPath, "Telemetry");
+        string matchDirectory = System.IO.Path.Combine(Application.persistentDataPath, "MatchLogs");
+        string telemetryDirectory = System.IO.Path.Combine(Application.persistentDataPath, "Telemetry");
         string fileName = string.Format("match_{0:yyyyMMdd_HHmmss}_{1}.json", DateTime.UtcNow, matchId);
         string snapshotFileName = string.Format("snapshots_{0:yyyyMMdd_HHmmss}_{1}.jsonl", DateTime.UtcNow, matchId);
-        filePath = Path.Combine(matchDirectory, fileName);
-        snapshotFilePath = Path.Combine(telemetryDirectory, snapshotFileName);
+        filePath = System.IO.Path.Combine(matchDirectory, fileName);
+        snapshotFilePath = System.IO.Path.Combine(telemetryDirectory, snapshotFileName);
 
         startedAtReal = Time.realtimeSinceStartupAsDouble;
         saveInterval = Mathf.Max(1f, saveInterval);
@@ -427,7 +427,7 @@ public class MatchRecorder : MonoBehaviour
     {
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(snapshotFilePath));
+            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(snapshotFilePath));
             File.AppendAllText(snapshotFilePath, SerializeSampleWithNulls(sample) + "\n");
         }
         catch (Exception exception)
@@ -440,7 +440,7 @@ public class MatchRecorder : MonoBehaviour
     {
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(filePath));
             File.WriteAllText(filePath, SerializeMatchDataWithNulls());
         }
         catch (Exception exception)

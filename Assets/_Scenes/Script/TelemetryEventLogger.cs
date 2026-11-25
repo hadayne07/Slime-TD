@@ -194,13 +194,13 @@ public sealed class TelemetryEventLogger : MonoBehaviour
         currentMapId = scene.name;
         startedAtReal = Time.realtimeSinceStartupAsDouble;
 
-        string directory = Path.Combine(Application.persistentDataPath, "Telemetry");
+        string directory = System.IO.Path.Combine(Application.persistentDataPath, "Telemetry");
         string fileName = string.Format(
             "events_{0:yyyyMMdd_HHmmss}_{1}.jsonl",
             DateTime.UtcNow,
             SessionId
         );
-        filePath = Path.Combine(directory, fileName);
+        filePath = System.IO.Path.Combine(directory, fileName);
 
         try
         {
