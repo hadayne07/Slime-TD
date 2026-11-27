@@ -61,6 +61,14 @@ public sealed class TelemetryEventLogger : MonoBehaviour
         public bool hasHpMax;
         public float damage;
         public bool hasDamage;
+        public int hpLost;
+        public bool hasHpLost;
+        public int enemiesLeaked;
+        public int enemiesLeakedGreen;
+        public int enemiesLeakedBlue;
+        public int enemiesLeakedRed;
+        public int enemiesLeakedBoss;
+        public bool hasLeakTotals;
         public int gold;
         public bool hasGold;
         public int goldDelta;
@@ -85,12 +93,50 @@ public sealed class TelemetryEventLogger : MonoBehaviour
         public bool hasTerminal;
     }
 
+    private struct LeakTotals
+    {
+        public int hpLost;
+        public int total;
+        public int green;
+        public int blue;
+        public int red;
+        public int boss;
+
+        public void Add(EnemyType type, int lost)
+        {
+            hpLost += lost;
+            total++;
+
+            switch (type)
+            {
+                case EnemyType.Green: green++; break;
+                case EnemyType.Blue: blue++; break;
+                case EnemyType.Red: red++; break;
+                case EnemyType.Boss: boss++; break;
+            }
+        }
+
+        public void WriteTo(EventRecord record)
+        {
+            record.hpLost = hpLost;
+            record.hasHpLost = true;
+            record.enemiesLeaked = total;
+            record.enemiesLeakedGreen = green;
+            record.enemiesLeakedBlue = blue;
+            record.enemiesLeakedRed = red;
+            record.enemiesLeakedBoss = boss;
+            record.hasLeakTotals = true;
+        }
+    }
+
     private string filePath;
     private double startedAtReal;
     private string activeSegmentId;
     private string currentMapId;
     private bool segmentOpen;
     private bool sessionEnded;
+    private LeakTotals segmentLeaks;
+    private LeakTotals sessionLeaks;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetStatics()
@@ -191,6 +237,8 @@ public sealed class TelemetryEventLogger : MonoBehaviour
         sessionEnded = false;
         segmentOpen = false;
         activeSegmentId = null;
+        segmentLeaks = default;
+        sessionLeaks = default;
         currentMapId = scene.name;
         startedAtReal = Time.realtimeSinceStartupAsDouble;
 
@@ -237,6 +285,7 @@ public sealed class TelemetryEventLogger : MonoBehaviour
             return;
 
         Instance.activeSegmentId = string.Format("wave-{0:00}", wave);
+        Instance.segmentLeaks = default;
         Instance.segmentOpen = true;
         Instance.Record("segment_start", record =>
         {
@@ -278,13 +327,34 @@ public sealed class TelemetryEventLogger : MonoBehaviour
 
     public static void RecordPlayerHit(int damage, int hpAfter)
     {
+        WritePlayerHit(damage, hpAfter, null, null);
+    }
+
+    public static void RecordEnemyLeak(EnemyType enemyType, int damage, int hpLost, int hpAfter)
+    {
+        if (Instance == null || Instance.sessionEnded)
+            return;
+
+        Instance.sessionLeaks.Add(enemyType, hpLost);
+        if (Instance.segmentOpen)
+            Instance.segmentLeaks.Add(enemyType, hpLost);
+
+        WritePlayerHit(damage, hpAfter, enemyType, hpLost);
+    }
+
+    private static void WritePlayerHit(int damage, int hpAfter, EnemyType? enemyType, int? hpLost)
+    {
         if (Instance == null || Instance.sessionEnded)
             return;
 
         Instance.Record("player_hit", record =>
         {
+            record.segmentId = Instance.segmentOpen ? Instance.activeSegmentId : null;
+            record.enemyType = enemyType?.ToString();
             record.damage = damage;
             record.hasDamage = true;
+            record.hpLost = hpLost.GetValueOrDefault();
+            record.hasHpLost = hpLost.HasValue;
             record.hp = hpAfter;
             record.hasHp = true;
             record.source = "enemy_leak";
@@ -405,11 +475,8 @@ public sealed class TelemetryEventLogger : MonoBehaviour
         if (Instance == null || Instance.sessionEnded)
             return;
 
-        if (!Instance.segmentOpen)
-        {
-            Instance.activeSegmentId = string.Format("wave-{0:00}", wave);
-            Instance.segmentOpen = true;
-        }
+        if (!Instance.segmentOpen || Instance.activeSegmentId != string.Format("wave-{0:00}", wave))
+            return;
 
         Instance.CloseSegment("won", false);
     }
@@ -435,6 +502,7 @@ public sealed class TelemetryEventLogger : MonoBehaviour
         {
             record.reason = reason;
             record.outcomeRaw = outcomeRaw ?? reason;
+            Instance.sessionLeaks.WriteTo(record);
         });
         Instance.sessionEnded = true;
     }
@@ -464,6 +532,7 @@ public sealed class TelemetryEventLogger : MonoBehaviour
             record.terminal = terminal;
             record.hasTerminal = true;
             record.reason = "wave_boundary_or_session_end";
+            segmentLeaks.WriteTo(record);
         });
         segmentOpen = false;
     }
@@ -539,6 +608,12 @@ public sealed class TelemetryEventLogger : MonoBehaviour
         json = SetJsonNullWhenMissing(json, nameof(EventRecord.hp), !record.hasHp);
         json = SetJsonNullWhenMissing(json, nameof(EventRecord.hpMax), !record.hasHpMax);
         json = SetJsonNullWhenMissing(json, nameof(EventRecord.damage), !record.hasDamage);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.hpLost), !record.hasHpLost);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.enemiesLeaked), !record.hasLeakTotals);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.enemiesLeakedGreen), !record.hasLeakTotals);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.enemiesLeakedBlue), !record.hasLeakTotals);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.enemiesLeakedRed), !record.hasLeakTotals);
+        json = SetJsonNullWhenMissing(json, nameof(EventRecord.enemiesLeakedBoss), !record.hasLeakTotals);
         json = SetJsonNullWhenMissing(json, nameof(EventRecord.gold), !record.hasGold);
         json = SetJsonNullWhenMissing(json, nameof(EventRecord.goldDelta), !record.hasGoldDelta);
         json = SetJsonNullWhenMissing(json, nameof(EventRecord.cost), !record.hasCost);

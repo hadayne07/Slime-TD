@@ -6,6 +6,7 @@ public class EnemyMove : MonoBehaviour
     [SerializeField] protected Path currentpath;
     private EnemyStatus enemyStatus;
     public static event Action<EnemyData> OnEnemyReachEnd;
+    public static event Action<EnemyData, EnemyType> OnEnemyLeaked;
     
     protected Vector3 targetWaypoint;
     protected int currentPosition;
@@ -42,6 +43,7 @@ public class EnemyMove : MonoBehaviour
             }
             else
             {
+                OnEnemyLeaked?.Invoke(data, enemyStatus.Type);
                 OnEnemyReachEnd?.Invoke(data);
                 gameObject.SetActive(false);
             }

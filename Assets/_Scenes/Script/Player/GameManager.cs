@@ -45,13 +45,13 @@ public class GameManager : MonoBehaviour
     {
         if (Instance != this) return;
 
-        EnemyMove.OnEnemyReachEnd += HandleEnemyReachEnd;
+        EnemyMove.OnEnemyLeaked += HandleEnemyLeaked;
         EnemyStatus.goldplus += HandleEnemyDestroyed;
     }
 
     private void OnDisable()
     {
-        EnemyMove.OnEnemyReachEnd -= HandleEnemyReachEnd;
+        EnemyMove.OnEnemyLeaked -= HandleEnemyLeaked;
         EnemyStatus.goldplus -= HandleEnemyDestroyed;
     }
 
@@ -69,13 +69,14 @@ public class GameManager : MonoBehaviour
         CurrentGold?.Invoke(gold);
     }
 
-    private void HandleEnemyReachEnd(EnemyData data)
+    private void HandleEnemyLeaked(EnemyData data, EnemyType enemyType)
     {
         if (data == null || hp <= 0) return;
 
+        int hpBefore = hp;
         hp = Mathf.Max(0, hp - data.Damage);
 
-        TelemetryEventLogger.RecordPlayerHit(data.Damage, hp);
+        TelemetryEventLogger.RecordEnemyLeak(enemyType, data.Damage, hpBefore - hp, hp);
         OnPlayerHit?.Invoke(data.Damage, hp);
         CurrentHp?.Invoke(hp);
 
